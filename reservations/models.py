@@ -1,3 +1,37 @@
+import uuid
 from django.db import models
+from django.core.validators import MinValueValidator
 
-# Create your models here.
+
+class ReservationStatusChoices(models.Choices):
+    RESERVED = "reserved"
+    ACTIVE = "active"
+    CONCLUDED = "concluded"
+    CANCELLED = "cancelled"
+
+
+class Reservation(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    checkin = models.DateField()
+    checkout = models.DateField()
+    status = models.CharField(
+        choices=ReservationStatusChoices.choices,
+        default=ReservationStatusChoices.RESERVED,
+    )
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    # user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+
+
+class ReservationService(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    # service = models.ForeignKey('services.Service', on_delete=models.CASCADE)
+    reservation = models.ForeignKey("reservation.Reservation", on_delete=models.CASCADE)
+    amount = models.IntegerField(validators=[MinValueValidator(0)])
+
+
+class ReservationPet(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
+    reservation = models.ForeignKey("reservation.Reservation", on_delete=models.CASCADE)
+    # pet = models.ForeignKey('pets.Pet', on_delete=models.CASCADE)
+    # room = models.ForeignKey('rooms.Room', on_delete=models.CASCADE)
