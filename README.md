@@ -19,13 +19,6 @@ um pet hotel: <a href="https://me-au.vercel.app/">Me-Au</a>. Para visualização
 da documentação da API
 <a href="https://m4-projeto-final.github.io/me-au-docs/">clique aqui</a>.
 
-## Tecnologias utilizadas
-
-- TypeScript;
-- Node;
-- PostgreSQL;
-- TypeORM;
-
 ## Diagrama ER
 
 <img src="DiagramDER.jpg">
