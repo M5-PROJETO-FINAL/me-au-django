@@ -17,7 +17,7 @@ class ReviewView(generics.ListCreateAPIView):
     lookup_url_kwarg = "reservation_id"
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, reservation_id=self.kwargs["pk"])
+        serializer.save(user=self.request.user, reservation_id=self.kwargs['pk'])
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
