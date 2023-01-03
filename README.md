@@ -22,3 +22,9 @@ da documentação da API
 ## Diagrama ER
 
 <img src="DiagramDER.jpg">
+
+## Testes
+
+Comando para executar os testes:
+
+`pytest --testdox -vvs`
