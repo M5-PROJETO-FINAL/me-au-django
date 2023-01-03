@@ -1,13 +1,13 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from .models import Room, RoomType
+from django.shortcuts import get_object_or_404
 
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ["id", "room_type_id"]
-        depth = 1
+        depth = 2
 
 
 class Room_TypeSerializer(serializers.ModelSerializer):
