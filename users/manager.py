@@ -26,5 +26,6 @@ class UserManager(BaseUserManager):
 
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault("is_adm", True)
+        extra_fields.setdefault("is_superuser", True)
 
         return self._create_user(email, password, **extra_fields)
