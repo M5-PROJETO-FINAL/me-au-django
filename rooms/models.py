@@ -3,9 +3,9 @@ import uuid
 
 
 class RoomType(models.Model):
-    title = models.CharField(unique=True)
-    description = models.CharField()
-    image = models.CharField()
+    title = models.CharField(max_length=25, unique=True)
+    description = models.CharField(max_length=150)
+    image = models.CharField(max_length=250)
     capacity = models.IntegerField()
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
@@ -15,7 +15,7 @@ class RoomType(models.Model):
 
 class Room(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    room_type = models.ForeignKey("roomtype.RoomType", on_delete=models.CASCADE)
+    room_type = models.ForeignKey("rooms.RoomType", on_delete=models.CASCADE)
 
     # reservation_pets = models.ForeignKey('reservation_pets.Reservation_pet', on_delete=models.CASCADE)
 
