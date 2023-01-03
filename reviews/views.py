@@ -13,9 +13,10 @@ class ReviewView(generics.ListCreateAPIView, PageNumberPagination):
     
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
+    lookup_url_kwarg = "reservation_id"
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, reservation_id=self.kwargs["pk"])
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
