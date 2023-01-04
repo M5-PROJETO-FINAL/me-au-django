@@ -88,7 +88,9 @@ DATABASES = {
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "PORT": 5432,
+        # "TEST": {"MIRROR": "test"},
     },
+    "test": {"ENGINE": "django.db.backends.sqlite3", "NAME": "only4test.sqlite"},
     "old": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
