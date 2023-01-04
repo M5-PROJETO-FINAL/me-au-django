@@ -34,7 +34,7 @@ class ReservationsView(ListCreateAPIView):
 
 class ReservationDeleteView(APIView):
     def delete(self, request, reservation_id):
-        reservation = get_object_or_404("reservations.Reservation", id=reservation_id)
+        reservation = get_object_or_404(Reservation, id=reservation_id)
         reservation.status = "cancelled"
         reservation.save()
-        return reservation
+        return Response({}, status=status.HTTP_204_NO_CONTENT)
