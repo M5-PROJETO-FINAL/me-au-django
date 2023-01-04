@@ -12,11 +12,13 @@ def get_all_reservations_of_a_given_room_type(room_type_id):
     room_type = RoomType.objects.get(id=room_type_id)
 
     # get all reservations that include the shared room::
-    all_reservations = Reservation.objects.filter(status__in=["reserved", "active"])
+    all_reservations = Reservation.objects.filter(
+        status__in=["reserved", "active"]
+    ).all()
 
     reservations_of_same_room_type = []
     for res in all_reservations:
-        for res_pet in res.reservation_pets:
+        for res_pet in res.reservation_pets.all():
             if res_pet.room.room_type == room_type:
                 reservations_of_same_room_type.append(res)
                 break
@@ -56,7 +58,7 @@ def get_available_room(
     Returns a room of a specific type (specified by room_type_id) which is available (has no reservations) in a given time window (specified by checkin and checkout).
     If room_type_id refers to the shared room, the shared room will be returned if and only if it is operating below its full capacity (of 20 dogs) for all dates in the specified range.
     """
-    room_type = get_object_or_404("rooms.RoomType", id=room_type_id)
+    room_type = get_object_or_404(RoomType, id=room_type_id)
     all_rooms = Room.objects.filter(room_type=room_type)
     required_dates = get_dates_in_range(checkin, checkout)
 
@@ -87,7 +89,7 @@ def get_available_room(
 
     # ultimo filtro para quartos possíveis: remover quartos q estão em conflicting_reservations
     for reservation in conflicting_reservations:
-        for res_pet in reservation.reservation_pets:
+        for res_pet in reservation.reservation_pets.all():
             if res_pet.room.id in ids_of_available_rooms:
                 idx = ids_of_available_rooms.index(res_pet.room.id)
                 ids_of_available_rooms.pop(idx)

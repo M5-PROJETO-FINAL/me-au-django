@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdminOrPetOwner
 from rest_framework.views import Response, status
 
+import ipdb
 
 
 class PetView(ListCreateAPIView):
@@ -15,16 +16,14 @@ class PetView(ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-
     def get_queryset(self):
         if self.request.user.is_adm:
             return self.queryset.all()
 
-        return self.queryset.filter(user_id=self.request.user)
-
+        return self.queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user_id=self.request.user)
+        serializer.save(user=self.request.user)
 
 
 class PetDetailView(RetrieveUpdateDestroyAPIView):
