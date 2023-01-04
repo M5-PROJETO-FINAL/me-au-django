@@ -1,0 +1,1255 @@
+openapi: 3.0.3
+info:
+  title: ME AU - API
+  version: 1.0.0
+  description: Me au is a hotel designed only for pets.
+paths:
+  /api/login/:
+    post:
+      operationId: api_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/pets/:
+    get:
+      operationId: api_pets_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+          description: ''
+    post:
+      operationId: api_pets_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pet'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+          description: ''
+  /api/pets/{id}/:
+    get:
+      operationId: api_pets_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this pet.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+          description: ''
+    put:
+      operationId: api_pets_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this pet.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Pet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Pet'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+          description: ''
+    patch:
+      operationId: api_pets_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this pet.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPet'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+          description: ''
+    delete:
+      operationId: api_pets_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this pet.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/reservations/:
+    get:
+      operationId: api_reservations_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+          description: ''
+    post:
+      operationId: api_reservations_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+          description: ''
+  /api/reservations/{reservation_id}/:
+    delete:
+      operationId: api_reservations_destroy
+      parameters:
+      - in: path
+        name: reservation_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/reviews/:
+    get:
+      operationId: api_reviews_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+          description: ''
+    post:
+      operationId: api_reviews_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Review'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+  /api/reviews/{id}/:
+    get:
+      operationId: api_reviews_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+    put:
+      operationId: api_reviews_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Review'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Review'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Review'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+    patch:
+      operationId: api_reviews_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReview'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReview'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReview'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+    delete:
+      operationId: api_reviews_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/rooms/:
+    get:
+      operationId: api_rooms_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+          description: ''
+  /api/rooms/{id}/:
+    get:
+      operationId: api_rooms_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this room.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    put:
+      operationId: api_rooms_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this room.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    patch:
+      operationId: api_rooms_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this room.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+    delete:
+      operationId: api_rooms_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this room.
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/rooms/{id}/types/:
+    get:
+      operationId: api_rooms_types_list
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+          description: ''
+    post:
+      operationId: api_rooms_types_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+  /api/roomstypes/:
+    get:
+      operationId: api_roomstypes_list
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room_Type'
+          description: ''
+    post:
+      operationId: api_roomstypes_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room_Type'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room_Type'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room_Type'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room_Type'
+          description: ''
+  /api/roomstypes/{id}/:
+    get:
+      operationId: api_roomstypes_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room_Type'
+          description: ''
+    put:
+      operationId: api_roomstypes_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room_Type'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room_Type'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room_Type'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room_Type'
+          description: ''
+    patch:
+      operationId: api_roomstypes_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom_Type'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom_Type'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoom_Type'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room_Type'
+          description: ''
+    delete:
+      operationId: api_roomstypes_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/services/:
+    get:
+      operationId: api_services_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+          description: ''
+    post:
+      operationId: api_services_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Service'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Service'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Service'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+          description: ''
+  /api/users/:
+    get:
+      operationId: api_users_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+          description: ''
+    post:
+      operationId: api_users_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/{id}/:
+    get:
+      operationId: api_users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: api_users_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: api_users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: api_users_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    PatchedPet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        age:
+          type: string
+          maxLength: 50
+        neutered:
+          type: boolean
+        vaccinated:
+          type: boolean
+        docile:
+          type: boolean
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+    PatchedReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        review_text:
+          type: string
+          maxLength: 255
+        stars:
+          type: integer
+          maximum: 5
+          minimum: 1
+        reservation:
+          type: array
+          items:
+            type: string
+            format: uuid
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+    PatchedRoom:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        room_type_id:
+          type: integer
+          readOnly: true
+    PatchedRoom_Type:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 25
+        description:
+          type: string
+          maxLength: 150
+        image:
+          type: string
+          maxLength: 250
+        capacity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 127
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        is_adm:
+          type: boolean
+          nullable: true
+        profile_img:
+          type: string
+          nullable: true
+          maxLength: 300
+        cpf:
+          type: string
+          nullable: true
+          maxLength: 11
+    Pet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        age:
+          type: string
+          maxLength: 50
+        neutered:
+          type: boolean
+        vaccinated:
+          type: boolean
+        docile:
+          type: boolean
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+      required:
+      - age
+      - docile
+      - id
+      - name
+      - neutered
+      - type
+      - user
+      - vaccinated
+    PetRooms:
+      type: object
+      properties:
+        pet_id:
+          type: string
+          format: uuid
+        room_type_id:
+          type: integer
+      required:
+      - pet_id
+      - room_type_id
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        checkin:
+          type: string
+          format: date
+        checkout:
+          type: string
+          format: date
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        pet_rooms:
+          type: array
+          items:
+            $ref: '#/components/schemas/PetRooms'
+          writeOnly: true
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReservationServices'
+          writeOnly: true
+      required:
+      - checkin
+      - checkout
+      - created_at
+      - id
+      - pet_rooms
+      - services
+      - status
+      - updated_at
+    ReservationServices:
+      type: object
+      properties:
+        service_id:
+          type: integer
+          writeOnly: true
+        service:
+          type: string
+          readOnly: true
+        amount:
+          type: integer
+      required:
+      - amount
+      - service
+      - service_id
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        review_text:
+          type: string
+          maxLength: 255
+        stars:
+          type: integer
+          maximum: 5
+          minimum: 1
+        reservation:
+          type: array
+          items:
+            type: string
+            format: uuid
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+      required:
+      - id
+      - reservation
+      - review_text
+      - stars
+      - user
+    Room:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        room_type_id:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - room_type_id
+    Room_Type:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 25
+        description:
+          type: string
+          maxLength: 150
+        image:
+          type: string
+          maxLength: 250
+        capacity:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+      required:
+      - capacity
+      - description
+      - id
+      - image
+      - price
+      - title
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 10
+        description:
+          type: string
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+      required:
+      - description
+      - id
+      - name
+      - price
+    StatusEnum:
+      enum:
+      - reserved
+      - active
+      - concluded
+      - cancelled
+      type: string
+    TokenObtainPair:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - email
+      - password
+      - refresh
+    TypeEnum:
+      enum:
+      - cat
+      - dog
+      type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 127
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+        is_adm:
+          type: boolean
+          nullable: true
+        profile_img:
+          type: string
+          nullable: true
+          maxLength: 300
+        cpf:
+          type: string
+          nullable: true
+          maxLength: 11
+      required:
+      - email
+      - id
+      - name
+      - password
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
