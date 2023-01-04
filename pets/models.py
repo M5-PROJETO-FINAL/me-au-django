@@ -3,8 +3,8 @@ import uuid
 
 
 class typeOptions(models.TextChoices):
-    CAT = "Cat"
-    DOG = "Dog"
+    CAT = "cat"
+    DOG = "dog"
 
 
 class Pet(models.Model):
@@ -15,8 +15,7 @@ class Pet(models.Model):
     neutered = models.BooleanField()
     vaccinated = models.BooleanField()
     docile = models.BooleanField()
-
-    user_id = models.ForeignKey("users.user", on_delete=models.CASCADE)
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE)
 
 
 #    def __repr__(self) -> str:
