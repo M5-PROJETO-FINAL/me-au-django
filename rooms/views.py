@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from .permissions import IsAdminUser
+from .permissions import IsAdminUser, IsAdm
 from .models import Room, RoomType
 from .serializers import Room_TypeSerializer, RoomSerializer
 from rest_framework.generics import (
@@ -12,6 +12,8 @@ from rest_framework.generics import (
 
 
 class RoomView(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdm]
 
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
@@ -43,6 +45,7 @@ class RoomTypesView(ListCreateAPIView):
     serializer_class = Room_TypeSerializer
 
     authentication_classes = [JWTAuthentication]
+
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminUser]
 
     def perform_create(self, serializer):
