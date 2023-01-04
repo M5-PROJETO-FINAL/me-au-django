@@ -27,4 +27,4 @@ da documentação da API
 
 Comando para executar os testes:
 
-`pytest --testdox -vvs`
+`python manage.py test`
