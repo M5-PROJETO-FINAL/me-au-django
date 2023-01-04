@@ -5,14 +5,14 @@ class UpdateReservationStatusMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
+
     def __call__(self, request):
-       
         self.update_reservation_statuses()
         
-
         response = self.get_response(request)
 
         return response
+
 
     def update_reservation_statuses(self):
         reservations = Reservation.objects.all()
