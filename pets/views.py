@@ -4,6 +4,7 @@ from .models import Pet
 from .serializers import PetSerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdminOrPetOwner
+from rest_framework.views import Response, status
 
 
 
@@ -32,3 +33,11 @@ class PetDetailView(RetrieveUpdateDestroyAPIView):
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrPetOwner]
+
+
+    def patch(self, request, *args, **kwargs):
+        
+        if "type" in request.data:
+            return Response({'detail': 'Type field cannot be updated'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return self.partial_update(request, *args, **kwargs)
