@@ -7,18 +7,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from users.permissions import IsAccountOwner, IsAdm
 
+
 class ReviewView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    
-    
+
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        
-    
+
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
@@ -27,4 +26,3 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
-

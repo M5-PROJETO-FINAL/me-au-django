@@ -13,6 +13,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_adm = models.BooleanField(default=False, null=True, blank=True)
     profile_img = models.CharField(max_length=300, null=True, blank=True)
     cpf = models.CharField(max_length=11, null=True, blank=True)
+    password_reset_code = models.IntegerField(null=True)
 
     objects = UserManager()
 

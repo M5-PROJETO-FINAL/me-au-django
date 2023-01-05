@@ -14,5 +14,3 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Reviews
         fields = ["id", "review_text", "stars", "reservation", "user"]
         read_only_fields = ["user"]
-        
-
