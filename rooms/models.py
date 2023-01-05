@@ -14,10 +14,7 @@ class RoomType(models.Model):
 
 
 class Room(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     room_type = models.ForeignKey("rooms.RoomType", on_delete=models.CASCADE)
-
-    # reservation_pets = models.ForeignKey('reservation_pets.Reservation_pet', on_delete=models.CASCADE)
 
     def __repr__(self) -> str:
         return f"Room [{self.id}]"
