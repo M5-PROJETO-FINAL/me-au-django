@@ -1,17 +1,3 @@
-# from django.db import models
-# from django.contrib.auth.models import AbstractUser
-# from django.contrib.auth.base_user.AbstractBaseUser
-
-# class User(AbstractUser):
-#     email = models.EmailField(max_length=127, unique=True)
-#     is_adm = models.BooleanField(default=False, null=True, blank=True)
-#     profile_img = models.CharField(max_length=300, null=True, blank=True)
-#     cpf = models.CharField(max_length=11, null=True, blank=True)
-
-#     def __repr__(self) -> str:
-#         return f"<User [{self.id}] - {self.username}>"
-
-
 from django.db import models
 
 from django.contrib.auth.base_user import AbstractBaseUser
