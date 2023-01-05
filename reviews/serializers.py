@@ -8,7 +8,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     stars = serializers.IntegerField(max_value=5, min_value=1)
     user = UserSerializer(read_only=True)
-    # reservation_id = ReservationSerializer()
+    # reservation = ReservationSerializer()
 
     class Meta:
         model = Reviews
