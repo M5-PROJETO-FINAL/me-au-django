@@ -14,13 +14,16 @@ class ReviewView(generics.ListCreateAPIView):
     
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
+    
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+        
+    
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAccountOwner, IsAdm]
-    lookup_url_kwarg = "pk"
+    permission_classes = [IsAdm]
+    # lookup_url_kwarg = "pk"
 
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
