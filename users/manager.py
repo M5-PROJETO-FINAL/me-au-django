@@ -20,11 +20,11 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         extra_fields.setdefault("is_adm", False)
-        extra_fields.setdefault("profile_img", False)
 
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault("is_adm", True)
+        extra_fields.setdefault("is_superuser", True)
 
         return self._create_user(email, password, **extra_fields)

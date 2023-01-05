@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import User
-import ipdb
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,7 +29,6 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data: dict) -> User:
-        # ipdb.set_trace()
         if validated_data["is_adm"] == True:
             return User.objects.create_superuser(**validated_data)
         else:
