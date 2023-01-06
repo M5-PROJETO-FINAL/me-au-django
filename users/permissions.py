@@ -1,6 +1,7 @@
 from rest_framework import permissions
 from .models import User
 from rest_framework.views import View
+import ipdb
 
 
 class IsAccountOwner(permissions.BasePermission):
