@@ -45,9 +45,6 @@ class RoomTypeCreateView(APITestCase):
         msg = "Verifique se todas as chaves obrigatórias são retornadas ao tentar criar uma roomType sem dados"
         self.assertSetEqual(expected_fields, returned_fields, msg)
 
-    # def test_roomtype_creation_not_admin_user(self):
-    #     return
-
     def test_roomtype_creation_not_authenticadet(self):
         # STATUS CODE
         with self.subTest():
@@ -91,25 +88,6 @@ class RoomTypeCreateView(APITestCase):
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
-
-        # # RETORNO JSON
-        # roomtype_created = RoomType.objects.last()
-        # resulted_data = response.json()
-        # ipdb.set_trace
-        # expected_data = {
-        #     "id": roomtype_created.id,
-        #     "title": resulted_data.title,
-        #     "description": "descricao legal!",
-        #     "image": "alguma_imagem_legal",
-        #     "capacity": 2,
-        #     "price": resulted_data.price,
-        # }
-
-        # msg = (
-        #     "Verifique se as informações retornadas no POST "
-        #     + f"em `{self.BASE_URL}` estão corretas."
-        # )
-        # self.assertDictEqual(expected_data, resulted_data, msg)
 
     def test_roomtype_creation_with_not_admin_user(self):
         roomtype_data = {
