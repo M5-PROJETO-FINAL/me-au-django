@@ -13,7 +13,7 @@ from rest_framework.generics import (
 
 class RoomView(ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdm]
+    permission_classes = [IsAuthenticated, IsAdm]
 
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
