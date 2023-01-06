@@ -1,16 +1,9 @@
 from rest_framework.test import APITestCase
 from rest_framework.views import status
-from rooms.models import RoomType
 from tests.factories import create_user_with_token, create_normal_user_with_token
-from tests.factories import (
-    create_roomTypeCat_with_user,
-    create_roomTypeDog_with_user,
-    create_roomTypeShared_with_user,
-)
-import ipdb
 
 
-class RoomTypeCreateView(APITestCase):
+class RoomTypeListView(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         # Create User_example
@@ -18,13 +11,9 @@ class RoomTypeCreateView(APITestCase):
         # Catch Token about User_example
         cls.access_token_1 = str(token_1.access_token)
 
-        # cls.roomtype_cat = create_roomTypeCat_with_user()
-        # cls.roomtype_dog = create_roomTypeDog_with_user()
-        # cls.roomtype_shared = create_roomTypeShared_with_user()
-
         cls.BASE_URL = "/api/roomstypes/"
 
-    def test_retrieve_roomtype(self):
+    def test_list_roomtype(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.get(self.BASE_URL, format="json")
 

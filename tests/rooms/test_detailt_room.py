@@ -10,7 +10,7 @@ from tests.factories import (
 import ipdb
 
 
-class RoomTypeCreateView(APITestCase):
+class RoomDetailView(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         # Create User_example
@@ -21,10 +21,10 @@ class RoomTypeCreateView(APITestCase):
         cls.user_2, token_2 = create_normal_user_with_token()
         cls.access_token_2 = str(token_2.access_token)
 
-        cls.BASE_URL = "/api/roomstypes/2/"
-        cls.BASE_URL_INCORRECT_ID = "/api/roomstypes/33333/"
+        cls.BASE_URL = "/api/rooms/2/"
+        cls.BASE_URL_INCORRECT_ID = "/api/rooms/33333/"
 
-    def test_update_roomtype_with_incorrect_id(self):
+    def test_update_room_with_incorrect_id(self):
         info_to_patch = {
             "title": "title update",
             "description": "description update",
@@ -43,15 +43,12 @@ class RoomTypeCreateView(APITestCase):
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    def test_update_roomtype_with_not_admin_user(self):
+    def test_update_room_with_not_admin_user(self):
         info_to_patch = {
-            "title": "title update",
-            "description": "description update",
+            "room_type_id": "title update",
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
-        response = self.client.patch(
-            self.BASE_URL_INCORRECT_ID, data=info_to_patch, format="json"
-        )
+        response = self.client.patch(self.BASE_URL, data=info_to_patch, format="json")
 
         # STATUS CODE
         expected_status_code = status.HTTP_403_FORBIDDEN
@@ -69,7 +66,7 @@ class RoomTypeCreateView(APITestCase):
         msg = f"Verifique se a mensagem retornada do PATCH em {self.BASE_URL} está correta"
         self.assertDictEqual(expected_message, resulted_message, msg)
 
-    def test_update_roomtype_without_token(self):
+    def test_update_room_without_token(self):
         response = self.client.patch(self.BASE_URL, format="json")
 
         # STATUS CODE
@@ -90,16 +87,15 @@ class RoomTypeCreateView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-    def test_update_roomtype_with_token(self):
+    def test_update_room_with_token(self):
         info_to_patch = {
-            "title": "title update",
-            "description": "description update",
+            "room_type_id": "title update",
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.patch(self.BASE_URL, data=info_to_patch, format="json")
 
         # STATUS CODE
-        expected_status_code = status.HTTP_200_OK
+        expected_status_code = status.HTTP_400_BAD_REQUEST
         resulted_status_code = response.status_code
         msg = (
             "Verifique se o status code retornado do PATCH com token correto "
@@ -107,7 +103,7 @@ class RoomTypeCreateView(APITestCase):
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    def test_detete_roomtype_with_incorrect_id(self):
+    def test_delete_room_with_incorrect_id(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.delete(self.BASE_URL_INCORRECT_ID, format="json")
 
@@ -120,7 +116,7 @@ class RoomTypeCreateView(APITestCase):
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    def test_delete_roomtype_with_not_admin_user(self):
+    def test_delete_room_with_not_admin_user(self):
 
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
         response = self.client.delete(self.BASE_URL_INCORRECT_ID, format="json")
@@ -141,7 +137,7 @@ class RoomTypeCreateView(APITestCase):
         msg = f"Verifique se a mensagem retornada do DELETE em {self.BASE_URL} está correta"
         self.assertDictEqual(expected_message, resulted_message, msg)
 
-    def test_delete_roomtype_without_token(self):
+    def test_delete_room_without_token(self):
         response = self.client.delete(self.BASE_URL, format="json")
 
         # STATUS CODE
@@ -162,7 +158,7 @@ class RoomTypeCreateView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-    def test_delete_roomtype_with_token(self):
+    def test_delete_room_with_token(self):
         BASE_URL = "/api/roomstypes/3/"
 
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
