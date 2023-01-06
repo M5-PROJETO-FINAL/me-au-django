@@ -37,7 +37,7 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAccountOwner, IsAdm]
+    permission_classes = [IsAccountOwner | IsAdm]
 
 
 class ForgotView(APIView):
