@@ -24,10 +24,4 @@ class ServiceSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict) -> Service:
         return Service.objects.create(**validated_data)
 
-    def update(self, instance: Service, validated_data: dict) -> Service:
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-
-        instance.save()
-
-        return instance
+   

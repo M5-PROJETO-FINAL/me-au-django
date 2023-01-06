@@ -25,9 +25,10 @@ class ServiceView(ListCreateAPIView):
 
 
 class ServiceDetailView(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAccountOwner | IsAdm]
+    
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAccountOwner | IsAdm]
-
+ 
