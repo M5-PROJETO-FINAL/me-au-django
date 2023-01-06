@@ -3,6 +3,7 @@ from rest_framework.views import status
 from rooms.models import RoomType
 from reservations.models import Reservation
 from tests.factories import create_user_with_token, create_normal_user_with_token
+from tests.factories.reservation_factories import create_dog_reservation_without_service
 import ipdb
 
 
@@ -65,24 +66,19 @@ class ReservationCreateView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-    # def test_reservation_creation_with_token(self):
-    #     reservation_data = {
-    #         "checkin": "2023-01-22",
-    #         "checkout": "2023-01-24",
-    #         "pet_rooms": ["descrição legal!"],
-    #         "services": ["descrição legal!"],
-    #     }
+    def test_reservation_creation_with_token(self):
+        reservation_data = create_dog_reservation_without_service()
 
-    #     # STATUS CODE
-    #     with self.subTest():
-    #         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #         response = self.client.post(
-    #             self.BASE_URL, data=roomtype_data, format="json"
-    #         )
-    #         expected_status_code = status.HTTP_201_CREATED
-    #         result_status_code = response.status_code
-    #         msg = (
-    #             "Verifique se o status code retornado do POST "
-    #             + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #         )
-    #         self.assertEqual(expected_status_code, result_status_code, msg)
+        # STATUS CODE
+        with self.subTest():
+            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+            response = self.client.post(
+                self.BASE_URL, data=reservation_data, format="json"
+            )
+            expected_status_code = status.HTTP_201_CREATED
+            result_status_code = response.status_code
+            msg = (
+                "Verifique se o status code retornado do POST "
+                + f"em `{self.BASE_URL}` é {expected_status_code}"
+            )
+            self.assertEqual(expected_status_code, result_status_code, msg)
