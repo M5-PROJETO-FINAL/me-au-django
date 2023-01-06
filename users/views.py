@@ -39,6 +39,16 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAccountOwner | IsAdm]
 
+    def patch(self, request, *args, **kwargs):
+
+        if "is_adm" in request.data:
+            return Response(
+                {"detail": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return self.partial_update(request, *args, **kwargs)
+
 
 class ForgotView(APIView):
     def post(self, request):
