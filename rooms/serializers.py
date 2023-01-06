@@ -10,6 +10,11 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = ["id", "room_type_id"]
         depth = 2
 
+    def update(self, instance, validated_data):
+        raise serializers.ValidationError(
+            "Unable to perform this action. Need to delete selected room if needed."
+        )
+
     # def room_compatible(self, value):
     #     ipdb.set_trace()
 
