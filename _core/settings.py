@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0:8000"]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -94,7 +94,7 @@ DATABASES = {
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "HOST": os.getenv("POSTGRES_HOST"),
-        # "PORT": 5432
+        "PORT": 5432,
     },
     "test": {"ENGINE": "django.db.backends.sqlite3", "NAME": "only4test.sqlite"},
     "old": {
