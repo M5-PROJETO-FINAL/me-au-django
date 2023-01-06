@@ -7,6 +7,7 @@ from .models import Reservation
 from .serializers import ReservationSerializer
 from pets.models import Pet
 from rooms.models import RoomType
+import ipdb
 
 
 class ReservationsView(ListCreateAPIView):
@@ -21,11 +22,17 @@ class ReservationsView(ListCreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        response_dict = {
-            **serializer.data,
-            "pet_rooms": serializer.validated_data["pet_rooms"],
-            "services": serializer.validated_data["services"],
-        }
+        if "services" in serializer.validated_data:
+            response_dict = {
+                **serializer.data,
+                "pet_rooms": serializer.validated_data["pet_rooms"],
+                "services": serializer.validated_data["services"],
+            }
+        else:
+            response_dict = {
+                **serializer.data,
+                "pet_rooms": serializer.validated_data["pet_rooms"],
+            }
         return Response(response_dict, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
@@ -40,14 +47,14 @@ class ReservationsView(ListCreateAPIView):
             )
             # ipdb.set_trace()
 
-            if pet_obj.type == "Dog" and "gatos" in room_obj.title:
+            if pet_obj.type == "dog" and "gatos" in room_obj.title:
                 return Response(
                     {"detail": "Pet not compatible with the room"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
             if (
-                pet_obj.type == "Cat"
+                pet_obj.type == "cat"
                 and "cães" in room_obj.title
                 or "Compartilhado" in room_obj.title
             ):
