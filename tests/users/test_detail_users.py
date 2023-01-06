@@ -92,7 +92,7 @@ class UserDetailViewsTest(APITestCase):
 
         # RETORNO JSON
         expected_data = {
-            "id": self.user_1.pk,
+            "id": str(self.user_1.pk),
             "name": self.user_1.name,
             "email": self.user_1.email,
             "is_adm": self.user_1.is_adm,
@@ -294,7 +294,7 @@ class UserDetailViewsTest(APITestCase):
 
         # RETORNO JSON
         expected_data = {
-            "id": self.user_1.pk,
+            "id": str(self.user_1.pk),
             "name": info_to_patch["name"],
             "email": info_to_patch["email"],
             "is_adm": self.user_1.is_adm,
