@@ -8,7 +8,7 @@ import ipdb
 User: User = get_user_model()
 
 
-class UserDetailViewsTest(APITestCase):
+class UserListViewsTest(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.BASE_URL = f"/api/users/"
