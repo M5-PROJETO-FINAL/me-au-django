@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 
 from reservations.models import Reservation
 
+
 class ReviewView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -18,13 +19,15 @@ class ReviewView(generics.ListCreateAPIView):
     queryset = Reviews.objects.all()
 
     def perform_create(self, serializer):
-        reservation = get_object_or_404(Reservation, pk=self.request.data['reservation'])
+        reservation = get_object_or_404(
+            Reservation, pk=self.request.data["reservation"]
+        )
         serializer.save(user=self.request.user, reservation=reservation)
-        
+
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdm, IsAccountOwnerReview] 
+    permission_classes = [IsAdm, IsAccountOwnerReview]
 
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()

@@ -35,7 +35,10 @@ class ReservationSerializer(serializers.Serializer):
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
     pet_rooms = PetRoomsSerializer(many=True, write_only=True)
-    services = ReservationServicesSerializer(many=True, write_only=True)
+
+    services = ReservationServicesSerializer(
+        allow_null=True, required=False, many=True, write_only=True
+    )
 
     def create(self, validated_data):
         newReservation = Reservation()

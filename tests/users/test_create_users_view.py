@@ -56,7 +56,7 @@ class UserViewTest(APITestCase):
 
         # RETORNO JSON
         expected_data = {
-            "id": added_user.id,
+            "id": str(added_user.id),
             "name": "Nicholas",
             "email": "nicholas@mail.com",
             "is_adm": True,
@@ -95,7 +95,7 @@ class UserViewTest(APITestCase):
 
         # RETORNO JSON
         expected_data = {
-            "id": added_user.id,
+            "id": str(added_user.id),
             "name": "Nicholas",
             "email": "nicholas@mail.com",
             "is_adm": False,
