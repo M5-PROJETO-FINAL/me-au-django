@@ -34,13 +34,4 @@ class UserSerializer(serializers.ModelSerializer):
         if validated_data["is_adm"] is True:
             return User.objects.create_superuser(**validated_data)
 
-    def update(self, instance: User, validated_data: dict) -> User:
-        for key, value in validated_data.items():
-            if key == "password":
-                instance.set_password(value)
-            else:
-                setattr(instance, key, value)
-
-        instance.save()
-
-        return instance
+  
