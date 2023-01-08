@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.views import Response, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from .permissions import IsAdminUser, IsAdm
 from .models import Room, RoomType
 from .serializers import Room_TypeSerializer, RoomSerializer
+from .aux_functions.availability import get_all_reservations_dates_of_a_given_room_type
 from rest_framework.generics import (
     ListCreateAPIView,
     ListAPIView,
@@ -59,3 +61,16 @@ class RoomTypeDetailView(RetrieveUpdateDestroyAPIView):
     queryset = RoomType.objects.all()
     serializer_class = Room_TypeSerializer
     lookup_url_kwarg = "pk"
+
+
+class RoomDateTypeView(ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    queryset = Room.objects.all()
+    lookup_url_kwarg = "pk"
+
+    def list(self, request, pk=None):
+        return Response(get_all_reservations_dates_of_a_given_room_type(pk), status=status.HTTP_200_OK)
+
+    
