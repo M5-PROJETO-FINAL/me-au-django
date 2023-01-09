@@ -4,8 +4,12 @@ from rooms.models import RoomType
 from services.models import Service
 from reservations.models import Reservation
 from tests.factories import create_user_with_token, create_normal_user_with_token
-from tests.factories.reservation_factories import create_dog, create_cat
 from datetime import datetime, timedelta
+from tests.factories.reservation_factories import (
+    create_dog,
+    create_cat,
+    create_dog_reservation,
+)
 import ipdb
 
 
@@ -75,8 +79,117 @@ class ReservationCreateView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-    # def test_reservation_creation_with_token(self):
-    #     reservation_data = create_dog_reservation_without_service()
+    def test_reservation_creation_with_token(self):
+        roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
+
+        reservation_data = {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(self.user_1_dog.id), "room_type_id": roomType.id}],
+        }
+
+        # STATUS CODE
+        with self.subTest():
+            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+            response = self.client.post(
+                self.BASE_URL, data=reservation_data, format="json"
+            )
+            expected_status_code = status.HTTP_201_CREATED
+            result_status_code = response.status_code
+            msg = (
+                "Verifique se o status code retornado do POST "
+                + f"em `{self.BASE_URL}` é {expected_status_code}"
+            )
+            self.assertEqual(expected_status_code, result_status_code, msg)
+
+    def test_reservation_creation_dog_room_incompatible_cat(self):
+        roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
+
+        reservation_data = {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(self.user_1_cat.id), "room_type_id": roomType.id}],
+        }
+
+        # STATUS CODE
+        with self.subTest():
+            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+            response = self.client.post(
+                self.BASE_URL, data=reservation_data, format="json"
+            )
+            expected_status_code = status.HTTP_400_BAD_REQUEST
+            result_status_code = response.status_code
+            msg = (
+                "Verifique se o status code retornado do POST "
+                + f"em `{self.BASE_URL}` é {expected_status_code}"
+            )
+            self.assertEqual(expected_status_code, result_status_code, msg)
+
+    def test_reservation_creation_shared_room_incompatible_cat(self):
+        roomType = RoomType.objects.get(title="Quarto Compartilhado")
+
+        reservation_data = {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(self.user_1_cat.id), "room_type_id": roomType.id}],
+        }
+
+        # STATUS CODE
+        with self.subTest():
+            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+            response = self.client.post(
+                self.BASE_URL, data=reservation_data, format="json"
+            )
+            expected_status_code = status.HTTP_400_BAD_REQUEST
+            result_status_code = response.status_code
+            msg = (
+                "Verifique se o status code retornado do POST "
+                + f"em `{self.BASE_URL}` é {expected_status_code}"
+            )
+            self.assertEqual(expected_status_code, result_status_code, msg)
+
+    def test_reservation_creation_cat_room_incompatible_dog(self):
+        roomType = RoomType.objects.get(title="Quarto Privativo (gatos)")
+
+        reservation_data = {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(self.user_1_dog.id), "room_type_id": roomType.id}],
+        }
+
+        # STATUS CODE
+        with self.subTest():
+            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+            response = self.client.post(
+                self.BASE_URL, data=reservation_data, format="json"
+            )
+            expected_status_code = status.HTTP_400_BAD_REQUEST
+            result_status_code = response.status_code
+            msg = (
+                "Verifique se o status code retornado do POST "
+                + f"em `{self.BASE_URL}` é {expected_status_code}"
+            )
+            self.assertEqual(expected_status_code, result_status_code, msg)
+
+    # TESTE ABAIXO: não deve ser capaz de agendar um pet que já foi agendado para essa data
+
+    # def test_reservation_creation_pet_for_conflicting_dates(self):
+    #     user_data_test = {
+    #         "name": "Tutor",
+    #         "email": "tutor_pet@mail.com",
+    #         "password": "1234",
+    #         "is_adm": True,
+    #     }
+    #     reservation = create_dog_reservation(user_data=user_data_test)
+    #     # ipdb.set_trace()
+    #     pet_id = reservation.reservation_pets.last().pet.id
+    #     roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
+
+    #     reservation_data = {
+    #         "checkin": "2023-02-22",
+    #         "checkout": "2023-02-24",
+    #         "pet_rooms": [{"pet_id": str(pet_id), "room_type_id": roomType.id}],
+    #     }
 
     #     # STATUS CODE
     #     with self.subTest():
@@ -84,13 +197,14 @@ class ReservationCreateView(APITestCase):
     #         response = self.client.post(
     #             self.BASE_URL, data=reservation_data, format="json"
     #         )
-    #         expected_status_code = status.HTTP_201_CREATED
+    #         expected_status_code = status.HTTP_400_BAD_REQUEST
     #         result_status_code = response.status_code
     #         msg = (
     #             "Verifique se o status code retornado do POST "
     #             + f"em `{self.BASE_URL}` é {expected_status_code}"
     #         )
     #         self.assertEqual(expected_status_code, result_status_code, msg)
+
 
     def test_reservation_creation_current_date(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
@@ -151,6 +265,10 @@ class ReservationCreateView(APITestCase):
         self.assertEqual(response.status_code, expected_status_code)
         self.assertIn("checkin", response_data)
         self.assertEqual(response_data['checkin'][0], "Checkout date must be after checkin")
+
+
+    # 3 TESTES ABAIXO:
+    # estão retornando erro 500 quando deveriam retornar 404 ou 400
 
     # def test_reservation_creation_with_invalid_service_id(self):
     #     cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
