@@ -57,7 +57,7 @@ def get_shared_room_population(date):
 
     count = 0
     for res in conflicting_reservations:
-        for res_pet in res.reservation_pets:
+        for res_pet in res.reservation_pets.all():
             if res_pet.room == shared_room:
                 count += 1
     return count
