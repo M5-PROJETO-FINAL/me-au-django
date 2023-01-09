@@ -26,7 +26,9 @@ class Reservation(models.Model):
 
 class ReservationService(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    service = models.ForeignKey("services.Service", on_delete=models.CASCADE)
+    service = models.ForeignKey(
+        "services.Service", on_delete=models.CASCADE, null=True, blank=True
+    )
     reservation = models.ForeignKey(
         "reservations.Reservation",
         on_delete=models.CASCADE,

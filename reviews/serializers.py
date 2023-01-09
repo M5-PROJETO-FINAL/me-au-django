@@ -4,13 +4,26 @@ from users.serializers import UserSerializer
 from reservations.serializers import ReservationSerializer
 
 
-class ReviewSerializer(serializers.ModelSerializer):
-
+class ReviewSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    review_text = serializers.CharField()
     stars = serializers.IntegerField(max_value=5, min_value=1)
     user = UserSerializer(read_only=True)
-    # reservation_id = ReservationSerializer()
+    reservation = ReservationSerializer(read_only=True)
 
-    class Meta:
-        model = Reviews
-        fields = ["id", "review_text", "stars", "reservation", "user"]
-        read_only_fields = ["user"]
+    def create(self, validated_data):
+        if validated_data["reservation"].status == "concluded":
+            review = Reviews.objects.create(**validated_data)
+            return review
+        else:
+            raise serializers.ValidationError(
+                "Unable to review before booking is completed", code=400
+            )
+
+    def update(self, instance: Reviews, validated_data: dict):
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+
+        instance.save()
+
+        return instance

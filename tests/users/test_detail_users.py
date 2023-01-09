@@ -92,7 +92,7 @@ class UserDetailViewsTest(APITestCase):
 
         # RETORNO JSON
         expected_data = {
-            "id": self.user_1.pk,
+            "id": str(self.user_1.pk),
             "name": self.user_1.name,
             "email": self.user_1.email,
             "is_adm": self.user_1.is_adm,
@@ -257,10 +257,10 @@ class UserDetailViewsTest(APITestCase):
             "id": "123indiozinhos",
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-        response = self.client.patch(self.BASE_URL_2, data=info_to_patch, format="json")
+        response = self.client.patch(self.BASE_URL, data=info_to_patch, format="json")
 
         # STATUS CODE
-        expected_status_code = status.HTTP_403_FORBIDDEN
+        expected_status_code = status.HTTP_200_OK
         resulted_status_code = response.status_code
         msg = (
             "Verifique se o status code retornado do PATCH alterando o ID "
@@ -268,12 +268,20 @@ class UserDetailViewsTest(APITestCase):
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-        expected_message = {
-            "detail": "You do not have permission to perform this action."
+        expected_data = {
+            "id": str(self.user_1.pk),
+            "name": self.user_1.name,
+            "email": self.user_1.email,
+            "is_adm": self.user_1.is_adm,
+            "profile_img": self.user_1.profile_img,
+            "cpf": self.user_1.cpf,
         }
-        resulted_message = response.json()
-        msg = f"Verifique se a mensagem retornada do PATCH alterando o ID em {self.BASE_URL} está correta"
-        self.assertDictEqual(expected_message, resulted_message, msg)
+        resulted_data = response.json()
+        msg = (
+            "Verifique se os dados retornados do PATCH em "
+            + f"em `{self.BASE_URL}` é {expected_data}"
+        )
+        self.assertDictEqual(expected_data, resulted_data, msg)
 
     def test_update_user_with_correct_user_token(self):
         info_to_patch = {
@@ -294,7 +302,7 @@ class UserDetailViewsTest(APITestCase):
 
         # RETORNO JSON
         expected_data = {
-            "id": self.user_1.pk,
+            "id": str(self.user_1.pk),
             "name": info_to_patch["name"],
             "email": info_to_patch["email"],
             "is_adm": self.user_1.is_adm,

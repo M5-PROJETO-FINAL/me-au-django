@@ -20,16 +20,16 @@ def create_user_with_token(user_data=None) -> tuple[User, RefreshToken]:
     return user, user_token
 
 
-def create_normal_user_with_token(user_data=None) -> tuple[User, RefreshToken]:
-    if not user_data:
-        user_data = {
+def create_normal_user_with_token(user_data2=None) -> tuple[User, RefreshToken]:
+    if not user_data2:
+        user_data2 = {
             "name": "Higor",
             "email": "higor@mail.com",
             "password": "1234",
             "is_adm": False,
         }
 
-    user = User.objects.create(**user_data)
-    user_token = RefreshToken.for_user(user)
+    user2 = User.objects.create(**user_data2)
+    user2_token = RefreshToken.for_user(user2)
 
-    return user, user_token
+    return user2, user2_token

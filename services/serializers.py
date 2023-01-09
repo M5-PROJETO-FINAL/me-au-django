@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
+
 from .models import Service
 
 
@@ -20,3 +20,8 @@ class ServiceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Name field must be unique")
 
         return value
+
+    def create(self, validated_data: dict) -> Service:
+        return Service.objects.create(**validated_data)
+
+   

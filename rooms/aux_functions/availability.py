@@ -26,6 +26,18 @@ def get_all_reservations_of_a_given_room_type(room_type_id):
     return reservations_of_same_room_type
 
 
+def get_all_reservations_dates_of_a_given_room_type(room_type_id):
+    """
+    Returns an array with all reservations dates made for a particular room type,
+    specified by the parameter. Does not include cancelled or concluded reservations.
+    """
+    reservations = get_all_reservations_of_a_given_room_type(room_type_id)
+    dates = []
+    for reservation in reservations:
+        dates = dates + get_dates_in_range(reservation.checkin, reservation.checkout)
+    return dates
+
+
 def get_shared_room_population(date):
     """
     Returns the number of pets occuppying the shared room in a give date,
