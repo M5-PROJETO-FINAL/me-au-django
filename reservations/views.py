@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListCreateAPIView, DestroyAPIView
@@ -66,8 +67,7 @@ class ReservationsView(ListCreateAPIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-        # pet is already booked: pegar o pet da requisiçao, buscar nas reservas com a mesma data se aquele pet já existe
-        # e estourar erro
+
             for data in request.data["pet_rooms"]:
                 pet_id = data["pet_id"]
                 reservations = Reservation.objects.all()
@@ -86,8 +86,7 @@ class ReservationsView(ListCreateAPIView):
                                 status.HTTP_400_BAD_REQUEST,
                             )
 
-                # reservations[0].reservation_pets.all()
-                # reservations[0].reservation_pets.filter(id=pet_id)
+
         return self.create(request, *args, **kwargs)
 
 
