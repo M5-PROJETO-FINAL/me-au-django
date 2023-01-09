@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import ListCreateAPIView, DestroyAPIView
@@ -19,6 +20,7 @@ class ReservationsView(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
+        # GENERIC VIEW CREATE
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -65,28 +67,26 @@ class ReservationsView(ListCreateAPIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-        # pet is already booked: pegar o pet da requisiçao, buscar nas reservas com a mesma data se aquele pet já existe
-        # e estourar erro
-        for data in request.data["pet_rooms"]:
-            pet_id = data["pet_id"]
-            reservations = Reservation.objects.all()
 
-            for reservation in reservations:
-                for reservation_pet in reservation.reservation_pets.all():
-                    ipdb.set_trace()
-                    if reservation_pet.pet.id == pet_id and are_dates_conflicting(
-                        request.data["checkin"],
-                        request.data["checkout"],
-                        reservation["checkin"],
-                        reservation["checkout"],
-                    ):
-                        return Response(
-                            {"detail": "Pet is already booked"},
-                            status.HTTP_400_BAD_REQUEST,
-                        )
+            for data in request.data["pet_rooms"]:
+                pet_id = data["pet_id"]
+                reservations = Reservation.objects.all()
 
-            # reservations[0].reservation_pets.all()
-            # reservations[0].reservation_pets.filter(id=pet_id)
+                for reservation in reservations:
+                    for reservation_pet in reservation.reservation_pets.all():
+                        ipdb.set_trace()
+                        if reservation_pet.pet.id == pet_id and are_dates_conflicting(
+                            request.data["checkin"],
+                            request.data["checkout"],
+                            reservation["checkin"],
+                            reservation["checkout"],
+                        ):
+                            return Response(
+                                {"detail": "Pet is already booked"},
+                                status.HTTP_400_BAD_REQUEST,
+                            )
+
+
         return self.create(request, *args, **kwargs)
 
 
