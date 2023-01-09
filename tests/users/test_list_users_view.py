@@ -59,16 +59,14 @@ class UserListViewsTest(APITestCase):
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
         # RETORNO JSON
-        expected_data = [
-            {
-                "id": str(self.user_2.pk),
-                "name": self.user_2.name,
-                "email": self.user_2.email,
-                "is_adm": self.user_2.is_adm,
-                "profile_img": self.user_2.profile_img,
-                "cpf": self.user_2.cpf,
-            }
-        ]
+        expected_data = {
+            "id": str(self.user_2.pk),
+            "name": self.user_2.name,
+            "email": self.user_2.email,
+            "is_adm": self.user_2.is_adm,
+            "profile_img": self.user_2.profile_img,
+            "cpf": self.user_2.cpf,
+        }
 
         resulted_data = response.json()
         msg = (

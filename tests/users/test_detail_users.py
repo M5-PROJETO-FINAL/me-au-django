@@ -161,19 +161,18 @@ class UserDetailViewsTest(APITestCase):
         msg = f"Verifique se a mensagem retornada do DELETE em {self.BASE_URL} está correta"
         self.assertDictEqual(expected_message, resulted_message, msg)
 
-    # Este só irá dar certo após a correção no relacionamento da Review com User
-    # def test_delete_user_with_correct_user_token(self):
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #     response = self.client.delete(self.BASE_URL, format="json")
+    def test_delete_user_with_correct_user_token(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+        response = self.client.delete(self.BASE_URL, format="json")
 
-    #     # STATUS CODE
-    #     expected_status_code = status.HTTP_204_NO_CONTENT
-    #     resulted_status_code = response.status_code
-    #     msg = (
-    #         "Verifique se o status code retornado do DELETE com token correto "
-    #         + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #     )
-    #     self.assertEqual(expected_status_code, resulted_status_code, msg)
+        # STATUS CODE
+        expected_status_code = status.HTTP_204_NO_CONTENT
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do DELETE com token correto "
+            + f"em `{self.BASE_URL}` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
 
     def test_delete_user_with_incorrect_id(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)

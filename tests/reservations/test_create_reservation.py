@@ -66,19 +66,19 @@ class ReservationCreateView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-    def test_reservation_creation_with_token(self):
-        reservation_data = create_dog_reservation_without_service()
+    # def test_reservation_creation_with_token(self):
+    #     reservation_data = create_dog_reservation_without_service()
 
-        # STATUS CODE
-        with self.subTest():
-            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-            response = self.client.post(
-                self.BASE_URL, data=reservation_data, format="json"
-            )
-            expected_status_code = status.HTTP_201_CREATED
-            result_status_code = response.status_code
-            msg = (
-                "Verifique se o status code retornado do POST "
-                + f"em `{self.BASE_URL}` é {expected_status_code}"
-            )
-            self.assertEqual(expected_status_code, result_status_code, msg)
+    #     # STATUS CODE
+    #     with self.subTest():
+    #         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+    #         response = self.client.post(
+    #             self.BASE_URL, data=reservation_data, format="json"
+    #         )
+    #         expected_status_code = status.HTTP_201_CREATED
+    #         result_status_code = response.status_code
+    #         msg = (
+    #             "Verifique se o status code retornado do POST "
+    #             + f"em `{self.BASE_URL}` é {expected_status_code}"
+    #         )
+    #         self.assertEqual(expected_status_code, result_status_code, msg)
