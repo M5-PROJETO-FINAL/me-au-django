@@ -12,14 +12,15 @@ from .roomtype_factories import (
 import ipdb
 
 
-def create_dog(dog_data: dict = None) -> Pet:
-    user_data = {
-        "name": "Natalia",
-        "email": "natalia_dog@mail.com",
-        "password": "1234",
-        "is_adm": True,
-    }
-
+def create_dog(user, dog_data: dict = None) -> Pet:
+    if not user:
+        user_data = {
+            "name": "Natalia",
+            "email": "natalia_dog@mail.com",
+            "password": "1234",
+            "is_adm": True,
+        }
+        user = User.objects.create_superuser(**user_data)
     dog_data = {
         "name": "dog",
         "type": "dog",
@@ -28,13 +29,19 @@ def create_dog(dog_data: dict = None) -> Pet:
         "vaccinated": True,
         "docile": True,
     }
-    ipdb.set_trace()
-    user = User.objects.create_superuser(**user_data)
     dog = Pet.objects.create(**dog_data, user=user)
     return dog
 
 
-def create_cat(cat_data: dict = None) -> Pet:
+def create_cat(user, cat_data: dict = None) -> Pet:
+    if not user:
+        user_data = {
+            "name": "Natalia",
+            "email": "natalia_dog@mail.com",
+            "password": "1234",
+            "is_adm": True,
+        }
+        user = User.objects.create_superuser(**user_data)
     cat_data = {
         "name": "cat",
         "type": "cat",
@@ -43,8 +50,7 @@ def create_cat(cat_data: dict = None) -> Pet:
         "vaccinated": True,
         "docile": True,
     }
-
-    cat = Pet.objects.create(**cat_data)
+    cat = Pet.objects.create(**cat_data, user=user)
     return cat
 
 
