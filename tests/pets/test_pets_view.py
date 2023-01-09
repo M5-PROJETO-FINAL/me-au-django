@@ -284,7 +284,7 @@ class PetViewTest(APITestCase):
         results_len = len(resulted_data)
 
         expected_len = 2
-        ipdb.set_trace()
+        
         msg = (
             "Verifique se os dados retornados do GET com token "
             + f"em `{self.BASE_URL}` é {results_len}"
