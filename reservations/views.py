@@ -7,6 +7,7 @@ from .models import Reservation
 from .serializers import ReservationSerializer
 from pets.models import Pet
 from rooms.models import RoomType
+from rooms.aux_functions.dates import are_dates_conflicting
 import ipdb
 
 
@@ -56,13 +57,36 @@ class ReservationsView(ListCreateAPIView):
                 if (
                     pet_obj.type == "cat"
                     and "cães" in room_obj.title
-                    or "Compartilhado" in room_obj.title
+                    or pet_obj.type == "cat"
+                    and "Compartilhado" in room_obj.title
                 ):
                     return Response(
                         {"detail": "Pet not compatible with the room"},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+        # pet is already booked: pegar o pet da requisiçao, buscar nas reservas com a mesma data se aquele pet já existe
+        # e estourar erro
+        for data in request.data["pet_rooms"]:
+            pet_id = data["pet_id"]
+            reservations = Reservation.objects.all()
+
+            for reservation in reservations:
+                for reservation_pet in reservation.reservation_pets.all():
+                    ipdb.set_trace()
+                    if reservation_pet.pet.id == pet_id and are_dates_conflicting(
+                        request.data["checkin"],
+                        request.data["checkout"],
+                        reservation["checkin"],
+                        reservation["checkout"],
+                    ):
+                        return Response(
+                            {"detail": "Pet is already booked"},
+                            status.HTTP_400_BAD_REQUEST,
+                        )
+
+            # reservations[0].reservation_pets.all()
+            # reservations[0].reservation_pets.filter(id=pet_id)
         return self.create(request, *args, **kwargs)
 
 
