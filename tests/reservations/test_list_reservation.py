@@ -16,10 +16,34 @@ class ReservationListView(APITestCase):
         cls.user_2_normal, token_2 = create_normal_user_with_token()
         cls.access_token_2 = str(token_2.access_token)
 
+        
+
         cls.BASE_URL = "/api/reservations/"
 
 
     def test_list_reservations_without_token(self):
+        response = self.client.get(self.BASE_URL, format="json")
+
+        # STATUS CODE
+        expected_status_code = status.HTTP_401_UNAUTHORIZED
+        resulted_status_code = response.status_code
+        msg = (
+            "Verifique se o status code retornado do GET sem token "
+            + f"em `{self.BASE_URL}` é {expected_status_code}"
+        )
+        self.assertEqual(expected_status_code, resulted_status_code, msg)
+
+        # RETORNO JSON
+        expected_data = {"detail": "Authentication credentials were not provided."}
+        resulted_data = response.json()
+        msg = (
+            "Verifique se os dados retornados do GET sem token "
+            + f"em `{self.BASE_URL}` é {expected_data}"
+        )
+        self.assertDictEqual(expected_data, resulted_data, msg)
+
+
+    def test_list_reservations_with_token(self):
         response = self.client.get(self.BASE_URL, format="json")
 
         # STATUS CODE
