@@ -20,6 +20,7 @@ class ReservationsView(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
+        # GENERIC VIEW CREATE
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -66,31 +67,25 @@ class ReservationsView(ListCreateAPIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+
             for data in request.data["pet_rooms"]:
                 pet_id = data["pet_id"]
                 reservations = Reservation.objects.all()
 
                 for reservation in reservations:
                     for reservation_pet in reservation.reservation_pets.all():
-                        checkin = datetime.strptime(
-                            request.data["checkin"], "%Y-%m-%d"
-                        ).date()
-                        checkout = datetime.strptime(
-                            request.data["checkout"], "%Y-%m-%d"
-                        ).date()
-
-                        if str(
-                            reservation_pet.pet.id
-                        ) == pet_id and are_dates_conflicting(
-                            checkin,
-                            checkout,
-                            reservation.checkin,
-                            reservation.checkout,
+                        ipdb.set_trace()
+                        if reservation_pet.pet.id == pet_id and are_dates_conflicting(
+                            request.data["checkin"],
+                            request.data["checkout"],
+                            reservation["checkin"],
+                            reservation["checkout"],
                         ):
                             return Response(
                                 {"detail": "Pet is already booked"},
                                 status.HTTP_400_BAD_REQUEST,
                             )
+
 
         return self.create(request, *args, **kwargs)
 
