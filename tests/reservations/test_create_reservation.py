@@ -171,39 +171,38 @@ class ReservationCreateView(APITestCase):
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
 
-    # TESTE ABAIXO: não deve ser capaz de agendar um pet que já foi agendado para essa data
 
-    # def test_reservation_creation_pet_for_conflicting_dates(self):
-    #     user_data_test = {
-    #         "name": "Tutor",
-    #         "email": "tutor_pet@mail.com",
-    #         "password": "1234",
-    #         "is_adm": True,
-    #     }
-    #     reservation = create_dog_reservation(user_data=user_data_test)
-    #     # ipdb.set_trace()
-    #     pet_id = reservation.reservation_pets.last().pet.id
-    #     roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
+    def test_reservation_creation_pet_for_conflicting_dates(self):
+        user_data_test = {
+            "name": "Tutor",
+            "email": "tutor_pet@mail.com",
+            "password": "1234",
+            "is_adm": True,
+        }
+        reservation = create_dog_reservation(user_data=user_data_test)
+        # ipdb.set_trace()
+        pet_id = reservation.reservation_pets.last().pet.id
+        roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
 
-    #     reservation_data = {
-    #         "checkin": "2023-02-22",
-    #         "checkout": "2023-02-24",
-    #         "pet_rooms": [{"pet_id": str(pet_id), "room_type_id": roomType.id}],
-    #     }
+        reservation_data = {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(pet_id), "room_type_id": roomType.id}],
+        }
 
-    #     # STATUS CODE
-    #     with self.subTest():
-    #         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #         response = self.client.post(
-    #             self.BASE_URL, data=reservation_data, format="json"
-    #         )
-    #         expected_status_code = status.HTTP_400_BAD_REQUEST
-    #         result_status_code = response.status_code
-    #         msg = (
-    #             "Verifique se o status code retornado do POST "
-    #             + f"em `{self.BASE_URL}` é {expected_status_code}"
-    #         )
-    #         self.assertEqual(expected_status_code, result_status_code, msg)
+        # STATUS CODE
+        with self.subTest():
+            self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+            response = self.client.post(
+                self.BASE_URL, data=reservation_data, format="json"
+            )
+            expected_status_code = status.HTTP_400_BAD_REQUEST
+            result_status_code = response.status_code
+            msg = (
+                "Verifique se o status code retornado do POST "
+                + f"em `{self.BASE_URL}` é {expected_status_code}"
+            )
+            self.assertEqual(expected_status_code, result_status_code, msg)
 
 
     def test_reservation_creation_current_date(self):
@@ -267,45 +266,43 @@ class ReservationCreateView(APITestCase):
         self.assertEqual(response_data['checkin'][0], "Checkout date must be after checkin")
 
 
-    # 3 TESTES ABAIXO:
-    # estão retornando erro 500 quando deveriam retornar 404 ou 400
 
-    # def test_reservation_creation_with_invalid_service_id(self):
-    #     cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
-    #     reservation_data = {
-    #         "checkin": "2023-07-12",
-    #         "checkout": "2023-07-15",
-    #         "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}],
-    #         "services": [{"service_id": "id inválida", "amount": 2}]
-    #     }
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #     response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
-    #     expected_status_code = status.HTTP_404_NOT_FOUND
-    #     self.assertEqual(response.status_code, expected_status_code)
+    def test_reservation_creation_with_invalid_service_id(self):
+        cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
+        reservation_data = {
+            "checkin": "2023-07-12",
+            "checkout": "2023-07-15",
+            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}],
+            "services": [{"service_id": "id inválida", "amount": 2}]
+        }
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+        response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
+        expected_status_code = status.HTTP_400_BAD_REQUEST
+        self.assertEqual(response.status_code, expected_status_code)
 
-    # def test_reservation_creation_with_invalid_room_type_id(self):
-    #     reservation_data = {
-    #         "checkin": "2023-07-12",
-    #         "checkout": "2023-07-15",
-    #         "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": 'id inválida'}],
-    #     }
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #     response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
-    #     expected_status_code = status.HTTP_404_NOT_FOUND
-    #     self.assertEqual(response.status_code, expected_status_code)
+    def test_reservation_creation_with_invalid_room_type_id(self):
+        reservation_data = {
+            "checkin": "2023-07-12",
+            "checkout": "2023-07-15",
+            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": 'id inválida'}],
+        }
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+        response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
+        expected_status_code = status.HTTP_400_BAD_REQUEST
+        self.assertEqual(response.status_code, expected_status_code)
 
-    # def test_reservation_creation_with_invalid_pet_id(self):
-    #     cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
-    #     reservation_data = {
-    #         "checkin": "2022-07-12",
-    #         "checkout": "2022-07-15",
-    #         "pet_rooms": [{"pet_id": "id inválida", "room_type_id": str(cat_room.id)}],
-    #     }
-    #     self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
-    #     response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
+    def test_reservation_creation_with_invalid_pet_id(self):
+        cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
+        reservation_data = {
+            "checkin": "2022-07-12",
+            "checkout": "2022-07-15",
+            "pet_rooms": [{"pet_id": "id inválida", "room_type_id": str(cat_room.id)}],
+        }
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
+        response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
 
-    #     expected_status_code = status.HTTP_404_NOT_FOUND
-    #     self.assertEqual(response.status_code, expected_status_code)
+        expected_status_code = status.HTTP_400_BAD_REQUEST
+        self.assertEqual(response.status_code, expected_status_code)
 
     def test_reservation_creation_for_past_checkin_date(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")

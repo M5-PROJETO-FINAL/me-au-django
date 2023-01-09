@@ -26,7 +26,6 @@ class ReservationServicesSerializer(serializers.Serializer):
     amount = serializers.IntegerField()
 
     def validate_service_id(self, service_id):
-        ipdb.set_trace()
         if type(service_id) != int:
             raise ValidationError('Invalid service idc', 404)
         
@@ -48,9 +47,7 @@ class ReservationSerializer(serializers.Serializer):
         allow_null=True, required=False, many=True, write_only=True
     )
 
-    def validate_services(self, services):
-        ipdb.set_trace()
-        return services
+
 
     def create(self, validated_data):
         # SERIALIZER CREATE
@@ -142,7 +139,6 @@ class ReservationSerializer(serializers.Serializer):
         checkout_date = datetime.strptime(self.initial_data['checkout'], r'%Y-%m-%d').date()
         if checkin >= checkout_date:
             raise ValidationError("Checkout date must be after checkin")
-        ipdb.set_trace()
         if checkin < datetime.now().date():
             raise ValidationError("Cannot book a reservation in the past")
         return checkin

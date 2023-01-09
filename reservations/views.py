@@ -9,6 +9,8 @@ from .serializers import ReservationSerializer
 from pets.models import Pet
 from rooms.models import RoomType
 from rooms.aux_functions.dates import are_dates_conflicting
+from django.core.exceptions import ValidationError
+import uuid
 import ipdb
 
 
@@ -42,7 +44,23 @@ class ReservationsView(ListCreateAPIView):
         serializer.save(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
+        if "services" in request.data:
+            for service in request.data['services']:
+                if type(service['service_id']) != int and not service['service_id'].isnumeric():
+                    return Response({"message": "Invalid service id"}, status=status.HTTP_400_BAD_REQUEST)
+
         if "pet_rooms" in request.data:
+            # validate id's:
+            for pet_room in request.data["pet_rooms"]:
+                pet_id = pet_room['pet_id']
+                try:
+                    uuid.UUID(pet_id)
+                except ValueError:
+                    return Response({"message": "Invalid pet id"}, status=status.HTTP_400_BAD_REQUEST)
+                room_type_id = pet_room['room_type_id']
+                if type(room_type_id) != int and not pet_room['room_type_id'].isnumeric():
+                    return Response({"message": "Invalid room type id"}, status=status.HTTP_400_BAD_REQUEST)
+
             for data in request.data["pet_rooms"]:
                 pet_obj = get_object_or_404(Pet.objects.all(), id=data["pet_id"])
                 room_obj = get_object_or_404(
@@ -74,12 +92,20 @@ class ReservationsView(ListCreateAPIView):
 
                 for reservation in reservations:
                     for reservation_pet in reservation.reservation_pets.all():
-                        ipdb.set_trace()
-                        if reservation_pet.pet.id == pet_id and are_dates_conflicting(
-                            request.data["checkin"],
-                            request.data["checkout"],
-                            reservation["checkin"],
-                            reservation["checkout"],
+                        checkin = datetime.strptime(
+                            request.data["checkin"], "%Y-%m-%d"
+                        ).date()
+                        checkout = datetime.strptime(
+                            request.data["checkout"], "%Y-%m-%d"
+                        ).date()
+
+                        if str(
+                            reservation_pet.pet.id
+                        ) == pet_id and are_dates_conflicting(
+                            checkin,
+                            checkout,
+                            reservation.checkin,
+                            reservation.checkout,
                         ):
                             return Response(
                                 {"detail": "Pet is already booked"},
