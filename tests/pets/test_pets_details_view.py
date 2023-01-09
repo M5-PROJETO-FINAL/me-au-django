@@ -11,7 +11,7 @@ from rest_framework.views import status
 import ipdb
 
 
-class PetViewTest(APITestCase):
+class PetDetailViewTest(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
 

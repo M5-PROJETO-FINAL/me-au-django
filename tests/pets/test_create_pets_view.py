@@ -8,7 +8,7 @@ from rest_framework.views import status
 import ipdb
 
 
-class PetViewTest(APITestCase):
+class PetViewCreateTest(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
         cls.BASE_URL = "/api/pets/"
