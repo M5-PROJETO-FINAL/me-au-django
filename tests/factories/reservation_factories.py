@@ -72,3 +72,25 @@ def create_dog_reservation(
     serializer.is_valid(raise_exception=True)
 
     return serializer.save(user=user)
+
+
+def create_concluded_reservation(
+    user: User = None, reservation_data: dict = None
+) -> Reservation:
+    dog = create_dog(user=user)
+    roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
+
+    if not reservation_data:
+        reservation_data = {
+            "status": "concluded",
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(dog.id), "room_type_id": roomType.id}],
+        }
+
+    serializer = ReservationSerializer(data=reservation_data)
+    serializer.is_valid(raise_exception=True)
+
+    resultado = serializer.save(user=user)
+
+    return resultado
