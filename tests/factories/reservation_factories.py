@@ -58,7 +58,7 @@ def create_cat(user: User = None, cat_data: dict = None) -> Pet:
 def create_dog_reservation(
     reservation_data: dict = None, user_data: dict = None
 ) -> Reservation:
-    dog = create_dog()
+    dog = create_dog(user=user_data)
     roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
 
     if not reservation_data:
