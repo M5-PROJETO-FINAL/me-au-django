@@ -12,7 +12,6 @@ from rooms.aux_functions.availability import get_available_room
 from services.models import Service
 from pets.models import Pet
 from datetime import datetime
-import ipdb
 
 
 class PetRoomsSerializer(serializers.Serializer):

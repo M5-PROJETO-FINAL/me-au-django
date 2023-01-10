@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListCreateAPIView, DestroyAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.views import APIView, Response, status
 from django.shortcuts import get_object_or_404
 from .models import Reservation
@@ -11,7 +11,6 @@ from rooms.models import RoomType
 from rooms.aux_functions.dates import are_dates_conflicting
 from rooms.aux_functions.availability import RoomUnavailable
 import uuid
-import ipdb
 
 
 class ReservationsView(ListCreateAPIView):

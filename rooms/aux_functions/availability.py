@@ -2,9 +2,7 @@ from django.shortcuts import get_object_or_404
 from rooms.models import Room, RoomType
 from reservations.models import Reservation
 from .dates import are_dates_conflicting, get_dates_in_range
-from django.core.exceptions import ValidationError
-from rest_framework.views import Response
-import ipdb
+
 
 class RoomUnavailable(Exception):
     ...
