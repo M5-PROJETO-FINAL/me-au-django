@@ -31,10 +31,12 @@ class PetDetailView(RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, IsAdminOrPetOwner]
 
-
     def patch(self, request, *args, **kwargs):
-        
+
         if "type" in request.data:
-            return Response({'detail': 'Type field cannot be updated'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Type field cannot be updated"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return self.partial_update(request, *args, **kwargs)
