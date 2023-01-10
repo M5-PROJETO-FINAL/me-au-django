@@ -6,8 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsAdminOrPetOwner
 from rest_framework.views import Response, status
 
-import ipdb
-
 
 class PetView(ListCreateAPIView):
     queryset = Pet.objects.all()

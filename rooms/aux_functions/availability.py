@@ -4,9 +4,13 @@ from reservations.models import Reservation
 from .dates import are_dates_conflicting, get_dates_in_range
 
 
+class RoomUnavailable(Exception):
+    ...
+
+
 def get_all_reservations_of_a_given_room_type(room_type_id):
     """
-    Returns an array with all reservations made for a particular room type,
+    Returns a list of all reservations made for a particular room type,
     specified by the parameter. Does not include cancelled or concluded reservations.
     """
     room_type = RoomType.objects.get(id=room_type_id)
@@ -24,6 +28,18 @@ def get_all_reservations_of_a_given_room_type(room_type_id):
                 break
 
     return reservations_of_same_room_type
+
+
+def get_all_reservations_dates_of_a_given_room_type(room_type_id):
+    """
+    Returns an array with all reservations dates made for a particular room type,
+    specified by the parameter. Does not include cancelled or concluded reservations.
+    """
+    reservations = get_all_reservations_of_a_given_room_type(room_type_id)
+    dates = []
+    for reservation in reservations:
+        dates = dates + get_dates_in_range(reservation.checkin, reservation.checkout)
+    return dates
 
 
 def get_shared_room_population(date):
@@ -45,11 +61,31 @@ def get_shared_room_population(date):
 
     count = 0
     for res in conflicting_reservations:
-        for res_pet in res.reservation_pets:
+        for res_pet in res.reservation_pets.all():
             if res_pet.room == shared_room:
                 count += 1
     return count
 
+def exists_available_room(date, room_type_id):
+    """
+    Returns true if there is at least one room of the desired type available in the desired date.
+    """
+    room_type_reservations = get_all_reservations_of_a_given_room_type(room_type_id)
+    room_type_reservations_with_conflicting_date = [res for res in room_type_reservations if res.checkin <= date and res.checkout > date]
+
+
+    if len(room_type_reservations_with_conflicting_date) >= 4: return False
+
+    amount_of_occupied_rooms = 0
+    for res in room_type_reservations_with_conflicting_date:
+
+        occupied_room_ids = []
+        for res_pet in res.reservation_pets.all():
+            if res_pet.room.room_type_id == room_type_id and res_pet.room.id not in occupied_room_ids:
+                occupied_room_ids.append(res_pet.room.id)   
+        amount_of_occupied_rooms += len(occupied_room_ids)
+    
+    return amount_of_occupied_rooms < 4
 
 def get_available_room(
     checkin, checkout, room_type_id, current_reservation_pets
@@ -66,7 +102,7 @@ def get_available_room(
         for date in required_dates:
             population = get_shared_room_population(date)
             if population >= room_type.capacity:
-                raise Exception(f"Shared room is full on {date}")
+                raise RoomUnavailable(f"Shared room is full on {date}")
         shared_room = all_rooms.first()
         return shared_room
 
@@ -93,8 +129,7 @@ def get_available_room(
             if res_pet.room.id in ids_of_available_rooms:
                 idx = ids_of_available_rooms.index(res_pet.room.id)
                 ids_of_available_rooms.pop(idx)
-
     if len(ids_of_available_rooms) == 0:
-        raise Exception(f"No available rooms of type '{room_type.title}'")
+        raise RoomUnavailable(f"No rooms of type '{room_type.title}' available")
 
     return Room.objects.get(id=ids_of_available_rooms[0])

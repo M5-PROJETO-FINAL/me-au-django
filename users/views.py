@@ -31,6 +31,21 @@ class UserView(ListCreateAPIView):
             self.permission_classes = [AllowAny]
         return [permission() for permission in self.permission_classes]
 
+    # sobrescrevendo esse método para que, quando o request seja feito por um usuário não adm,
+    # seja retornado apenas o objeto (não um array) // 3 últimas linhas da função
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        if request.user.is_adm:
+            return Response(serializer.data)
+        return Response(serializer.data[0])
+
 
 class UserDetailView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()

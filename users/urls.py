@@ -9,5 +9,5 @@ urlpatterns = [
     path("login/", jwt_views.TokenObtainPairView.as_view()),
     path("forgot/", views.ForgotView.as_view()),
     path("forgot/verify/", views.ForgotView.as_view()),
-    path("forgot/<code>", views.PasswordResetView.as_view()),
+    path("forgot/<int:code>", views.PasswordResetView.as_view()),
 ]

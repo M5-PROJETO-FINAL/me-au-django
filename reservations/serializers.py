@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 from .models import (
     Reservation,
     ReservationService,
@@ -10,12 +11,11 @@ from rooms.models import RoomType, Room
 from rooms.aux_functions.availability import get_available_room
 from services.models import Service
 from pets.models import Pet
-from users.serializers import UserSerializer
-import ipdb
+from datetime import datetime
 
 
 class PetRoomsSerializer(serializers.Serializer):
-    pet_id = serializers.UUIDField()
+    pet_id = serializers.CharField()
     room_type_id = serializers.IntegerField()
 
 
@@ -23,6 +23,12 @@ class ReservationServicesSerializer(serializers.Serializer):
     service_id = serializers.IntegerField(write_only=True)
     service = serializers.CharField(read_only=True)
     amount = serializers.IntegerField()
+
+    def validate_service_id(self, service_id):
+        if type(service_id) != int:
+            raise ValidationError('Invalid service idc', 404)
+        
+        return service_id
 
 
 class ReservationSerializer(serializers.Serializer):
@@ -40,8 +46,12 @@ class ReservationSerializer(serializers.Serializer):
         allow_null=True, required=False, many=True, write_only=True
     )
 
+
+
     def create(self, validated_data):
+        # SERIALIZER CREATE
         newReservation = Reservation()
+        newReservation.user = validated_data["user"]
         newReservation.checkin = validated_data["checkin"]
         newReservation.checkout = validated_data["checkout"]
         newReservation.save()
@@ -70,6 +80,7 @@ class ReservationSerializer(serializers.Serializer):
         return reservation_services
 
     def create_reservation_pets(self, pet_rooms, checkin, checkout):
+        self.validate_pet_rooms(pet_rooms)
         cat_room = RoomType.objects.get(title="Quarto Privativo (gatos)")
         pet_rooms_cat = [pr for pr in pet_rooms if pr["room_type_id"] == cat_room.id]
 
@@ -83,7 +94,6 @@ class ReservationSerializer(serializers.Serializer):
 
         pets_in_the_room = 0
         all_reservation_pets = []
-
         for i, pet_room in enumerate(pet_rooms_cat):
             current_pet = get_object_or_404(Pet, id=pet_room["pet_id"])
             if pets_in_the_room == 2 or i == 0:
@@ -123,3 +133,23 @@ class ReservationSerializer(serializers.Serializer):
             all_reservation_pets.append(reservation_pet)
 
         return all_reservation_pets
+
+    def validate_checkin(self, checkin):
+        checkout_date = datetime.strptime(self.initial_data['checkout'], r'%Y-%m-%d').date()
+        if checkin >= checkout_date:
+            raise ValidationError("Checkout date must be after checkin")
+        if checkin < datetime.now().date():
+            raise ValidationError("Cannot book a reservation in the past")
+        return checkin
+
+    def validate_pet_rooms(self, pet_rooms):
+        # ensure no duplicate pets:
+        pet_ids = [pr["pet_id"] for pr in pet_rooms]
+        unique_ids = []
+        for id in pet_ids:
+            if id not in unique_ids:
+                unique_ids.append(id)
+            else:
+                raise ValidationError("Trying to book the same pet twice", "400")
+
+        return pet_rooms

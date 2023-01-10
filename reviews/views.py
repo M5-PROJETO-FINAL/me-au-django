@@ -20,7 +20,7 @@ class ReviewView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         reservation = get_object_or_404(
-            Reservation, pk=self.request.data["reservation"]
+            Reservation, pk=self.request.data["reservation_id"]
         )
         serializer.save(user=self.request.user, reservation=reservation)
 
