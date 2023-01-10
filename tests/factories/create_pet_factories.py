@@ -37,7 +37,7 @@ def create_multiple_pet_with_user(
         }
         for index in range(1, pets_count + 1)
     ]
-    pets_objects = [Pet(**pets_data) for pet_data in pets_data]
+    pets_objects = [Pet(**pet_data, user=user) for pet_data in pets_data]
     pets = Pet.objects.bulk_create(pets_objects)
 
     return pets
