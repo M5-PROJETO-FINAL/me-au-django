@@ -18,9 +18,9 @@ class ReservationListView(APITestCase):
         cls.user_2_normal, token_2 = create_normal_user_with_token()
         cls.access_token_2 = str(token_2.access_token)
 
-        cls.reservation_dog = create_dog_reservation(user_data=cls.user_2_normal)
+        cls.reservation_dog = create_dog_reservation(user=cls.user_2_normal)
 
-        cls.reservation_dog2 = create_dog_reservation(user_data=cls.user_1_super)
+        cls.reservation_dog2 = create_dog_reservation(user=cls.user_1_super)
 
         cls.BASE_URL = "/api/reservations/"
 
