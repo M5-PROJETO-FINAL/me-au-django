@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.generics import ListCreateAPIView, DestroyAPIView
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.views import APIView, Response, status
 from django.shortcuts import get_object_or_404
 from .models import Reservation
@@ -9,9 +9,8 @@ from .serializers import ReservationSerializer
 from pets.models import Pet
 from rooms.models import RoomType
 from rooms.aux_functions.dates import are_dates_conflicting
-from django.core.exceptions import ValidationError
+from rooms.aux_functions.availability import RoomUnavailable
 import uuid
-import ipdb
 
 
 class ReservationsView(ListCreateAPIView):
@@ -25,7 +24,10 @@ class ReservationsView(ListCreateAPIView):
         # GENERIC VIEW CREATE
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        try:
+            self.perform_create(serializer)
+        except RoomUnavailable as e:
+            return Response({"message": str(e)}, status=404)
         headers = self.get_success_headers(serializer.data)
         if "services" in serializer.validated_data:
             response_dict = {
@@ -66,7 +68,6 @@ class ReservationsView(ListCreateAPIView):
                 room_obj = get_object_or_404(
                     RoomType.objects.all(), id=data["room_type_id"]
                 )
-                # ipdb.set_trace()
 
                 if pet_obj.type == "dog" and "gatos" in room_obj.title:
                     return Response(
@@ -115,6 +116,10 @@ class ReservationsView(ListCreateAPIView):
 
         return self.create(request, *args, **kwargs)
 
+    def get_queryset(self):
+        if self.request.user.is_adm:
+            return self.queryset.all()
+        return self.queryset.filter(user=self.request.user)
 
 class ReservationDeleteView(APIView):
     def delete(self, request, reservation_id):

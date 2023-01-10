@@ -56,9 +56,10 @@ def create_cat(user: User = None, cat_data: dict = None) -> Pet:
 
 
 def create_dog_reservation(
-    reservation_data: dict = None, user_data: dict = None
+    user: User = None,
+    reservation_data: dict = None
 ) -> Reservation:
-    dog = create_dog(user=user_data)
+    dog = create_dog(user=user)
     roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
 
     if not reservation_data:
@@ -72,7 +73,7 @@ def create_dog_reservation(
     # ipdb.set_trace()
     serializer.is_valid(raise_exception=True)
 
-    return serializer.save()
+    return serializer.save(user=user)
 
 
 # def create_cat_reservation_without_service(

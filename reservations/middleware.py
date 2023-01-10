@@ -24,7 +24,7 @@ class UpdateReservationStatusMiddleware:
 
             if (
                 reservation.status == "reserved"
-                and today.date() > checkin
+                and today.date() >= checkin
                 and today.date() < checkout
             ):
                 reservation.status = "active"

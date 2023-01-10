@@ -12,7 +12,6 @@ from rooms.aux_functions.availability import get_available_room
 from services.models import Service
 from pets.models import Pet
 from datetime import datetime
-import ipdb
 
 
 class PetRoomsSerializer(serializers.Serializer):
@@ -51,8 +50,8 @@ class ReservationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         # SERIALIZER CREATE
-        # ipdb.set_trace()
         newReservation = Reservation()
+        newReservation.user = validated_data["user"]
         newReservation.checkin = validated_data["checkin"]
         newReservation.checkout = validated_data["checkout"]
         newReservation.save()

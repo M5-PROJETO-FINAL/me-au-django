@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 from rest_framework.views import status
 from rooms.models import RoomType
 from services.models import Service
-from reservations.models import Reservation
+from users.models import User
 from tests.factories import create_user_with_token, create_normal_user_with_token
 from datetime import datetime, timedelta
 from tests.factories.reservation_factories import (
@@ -179,7 +179,9 @@ class ReservationCreateView(APITestCase):
             "password": "1234",
             "is_adm": True,
         }
-        reservation = create_dog_reservation(user_data=user_data_test)
+        user = User.objects.create(**user_data_test)
+        
+        reservation = create_dog_reservation(user=user)
         # ipdb.set_trace()
         pet_id = reservation.reservation_pets.last().pet.id
         roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
