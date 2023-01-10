@@ -74,7 +74,7 @@ def create_dog_reservation(
 
     return serializer.save(user=user)
 
-def create_multiple_dog_reservations(
+def create_multiple_reservations(
     user: User, pets: QuerySet
 ) -> QuerySet[Reservation]:
 

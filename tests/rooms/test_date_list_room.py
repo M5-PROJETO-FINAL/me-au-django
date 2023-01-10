@@ -3,7 +3,7 @@ from rest_framework.views import status
 from rooms.models import RoomType
 from rooms.models import Room
 from tests.factories import create_user_with_token, create_normal_user_with_token
-from tests.factories.reservation_factories import create_multiple_dog_reservations, create_multiple_shared_reservations
+from tests.factories.reservation_factories import create_multiple_reservations, create_multiple_shared_reservations
 from tests.factories.create_pet_factories import create_multiple_pet_with_user
 import ipdb
 
@@ -26,7 +26,7 @@ class DateRoomListView(APITestCase):
         cls.access_token_2 = str(token_2.access_token)
 
         cls.multiples_pet = create_multiple_pet_with_user(user=cls.user_1_normal, pets_count=10, type="cat")
-        cls.multiples_reserv = create_multiple_dog_reservations(user=cls.user_1_normal, pets=cls.multiples_pet)
+        cls.multiples_reserv = create_multiple_reservations(user=cls.user_1_normal, pets=cls.multiples_pet)
 
         cls.multiples_pet_2 = create_multiple_pet_with_user(user=cls.user_2_normal, pets_count=20, type="dog")
         cls.multiples_reserv_2 = create_multiple_shared_reservations(user=cls.user_2_normal, pets=cls.multiples_pet_2)
