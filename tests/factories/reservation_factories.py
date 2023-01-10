@@ -56,8 +56,7 @@ def create_cat(user: User = None, cat_data: dict = None) -> Pet:
 
 
 def create_dog_reservation(
-    user: User = None,
-    reservation_data: dict = None
+    user: User = None, reservation_data: dict = None
 ) -> Reservation:
     dog = create_dog(user=user)
     roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
@@ -70,25 +69,6 @@ def create_dog_reservation(
         }
 
     serializer = ReservationSerializer(data=reservation_data)
-    # ipdb.set_trace()
     serializer.is_valid(raise_exception=True)
 
     return serializer.save(user=user)
-
-
-# def create_cat_reservation_without_service(
-#     reservation_data: dict = None,
-# ) -> Reservation:
-#     cat = create_cat()
-#     roomType = create_roomTypeCat_with_user()
-
-#     if not reservation_data:
-#         reservation_data = {
-#             "checkin": "2022-12-22",
-#             "checkout": "2022-12-23",
-#             "pet_rooms": [{"pet_id": cat.id, "room_type_id": roomType.id}],
-#         }
-
-#     reservation = Reservation.objects.create(**reservation_data)
-
-#     return reservation
