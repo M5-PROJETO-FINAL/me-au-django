@@ -24,12 +24,12 @@ def create_pet_with_user(
 
 
 def create_multiple_pet_with_user(
-    user: User, pets_count: int
+    user: User, pets_count: int, type: str
 ) -> QuerySet[Pet]:
     pets_data = [
         {
-            "name": f"Algum {index}",
-            "type": "cat",
+            "name": f"Pet {index}",
+            "type": f"{type}",
             "age": "2 years old",
             "neutered": True,
             "vaccinated": True,
