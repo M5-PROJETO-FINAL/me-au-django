@@ -12,6 +12,7 @@ from rooms.aux_functions.availability import get_available_room
 from services.models import Service
 from pets.models import Pet
 from datetime import datetime
+import ipdb
 
 
 class PetRoomsSerializer(serializers.Serializer):
@@ -26,15 +27,15 @@ class ReservationServicesSerializer(serializers.Serializer):
 
     def validate_service_id(self, service_id):
         if type(service_id) != int:
-            raise ValidationError('Invalid service idc', 404)
-        
+            raise ValidationError("Invalid service idc", 404)
+
         return service_id
 
 
 class ReservationSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)
     status = serializers.ChoiceField(
-        choices=ReservationStatusChoices.choices, read_only=True
+        choices=ReservationStatusChoices.choices, allow_null=True, required=False
     )
     checkin = serializers.DateField()
     checkout = serializers.DateField()
@@ -46,14 +47,15 @@ class ReservationSerializer(serializers.Serializer):
         allow_null=True, required=False, many=True, write_only=True
     )
 
-
-
     def create(self, validated_data):
         # SERIALIZER CREATE
         newReservation = Reservation()
         newReservation.user = validated_data["user"]
         newReservation.checkin = validated_data["checkin"]
         newReservation.checkout = validated_data["checkout"]
+        if "status" in validated_data:
+            newReservation.status = validated_data["status"]
+
         newReservation.save()
         if "services" in validated_data:
             reservation_services = self.create_reservation_services(
@@ -135,7 +137,9 @@ class ReservationSerializer(serializers.Serializer):
         return all_reservation_pets
 
     def validate_checkin(self, checkin):
-        checkout_date = datetime.strptime(self.initial_data['checkout'], r'%Y-%m-%d').date()
+        checkout_date = datetime.strptime(
+            self.initial_data["checkout"], r"%Y-%m-%d"
+        ).date()
         if checkin >= checkout_date:
             raise ValidationError("Checkout date must be after checkin")
         if checkin < datetime.now().date():

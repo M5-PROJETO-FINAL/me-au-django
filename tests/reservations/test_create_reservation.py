@@ -85,7 +85,9 @@ class ReservationCreateView(APITestCase):
         reservation_data = {
             "checkin": "2023-02-22",
             "checkout": "2023-02-24",
-            "pet_rooms": [{"pet_id": str(self.user_1_dog.id), "room_type_id": roomType.id}],
+            "pet_rooms": [
+                {"pet_id": str(self.user_1_dog.id), "room_type_id": roomType.id}
+            ],
         }
 
         # STATUS CODE
@@ -108,7 +110,9 @@ class ReservationCreateView(APITestCase):
         reservation_data = {
             "checkin": "2023-02-22",
             "checkout": "2023-02-24",
-            "pet_rooms": [{"pet_id": str(self.user_1_cat.id), "room_type_id": roomType.id}],
+            "pet_rooms": [
+                {"pet_id": str(self.user_1_cat.id), "room_type_id": roomType.id}
+            ],
         }
 
         # STATUS CODE
@@ -131,7 +135,9 @@ class ReservationCreateView(APITestCase):
         reservation_data = {
             "checkin": "2023-02-22",
             "checkout": "2023-02-24",
-            "pet_rooms": [{"pet_id": str(self.user_1_cat.id), "room_type_id": roomType.id}],
+            "pet_rooms": [
+                {"pet_id": str(self.user_1_cat.id), "room_type_id": roomType.id}
+            ],
         }
 
         # STATUS CODE
@@ -154,7 +160,9 @@ class ReservationCreateView(APITestCase):
         reservation_data = {
             "checkin": "2023-02-22",
             "checkout": "2023-02-24",
-            "pet_rooms": [{"pet_id": str(self.user_1_dog.id), "room_type_id": roomType.id}],
+            "pet_rooms": [
+                {"pet_id": str(self.user_1_dog.id), "room_type_id": roomType.id}
+            ],
         }
 
         # STATUS CODE
@@ -171,7 +179,6 @@ class ReservationCreateView(APITestCase):
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
 
-
     def test_reservation_creation_pet_for_conflicting_dates(self):
         user_data_test = {
             "name": "Tutor",
@@ -180,9 +187,8 @@ class ReservationCreateView(APITestCase):
             "is_adm": True,
         }
         user = User.objects.create(**user_data_test)
-        
+
         reservation = create_dog_reservation(user=user)
-        # ipdb.set_trace()
         pet_id = reservation.reservation_pets.last().pet.id
         roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
 
@@ -206,14 +212,15 @@ class ReservationCreateView(APITestCase):
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
 
-
     def test_reservation_creation_current_date(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
         today = datetime.now().date()
         reservation_data = {
-            "checkin": today.strftime('%Y-%m-%d'),
-            "checkout": (today + timedelta(1)).strftime('%Y-%m-%d'),
-            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}]
+            "checkin": today.strftime("%Y-%m-%d"),
+            "checkout": (today + timedelta(1)).strftime("%Y-%m-%d"),
+            "pet_rooms": [
+                {"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}
+            ],
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
@@ -226,7 +233,9 @@ class ReservationCreateView(APITestCase):
         reservation_data = {
             "checkin": "2023-02-30",
             "checkout": "2023-02-34",
-            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}]
+            "pet_rooms": [
+                {"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}
+            ],
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
@@ -234,15 +243,23 @@ class ReservationCreateView(APITestCase):
         expected_status_code = status.HTTP_400_BAD_REQUEST
         self.assertIn("checkin", response_data)
         self.assertIn("checkout", response_data)
-        self.assertEqual(response_data['checkin'][0], "Date has wrong format. Use one of these formats instead: YYYY-MM-DD.")
-        self.assertEqual(response_data['checkout'][0], "Date has wrong format. Use one of these formats instead: YYYY-MM-DD.")
-        
+        self.assertEqual(
+            response_data["checkin"][0],
+            "Date has wrong format. Use one of these formats instead: YYYY-MM-DD.",
+        )
+        self.assertEqual(
+            response_data["checkout"][0],
+            "Date has wrong format. Use one of these formats instead: YYYY-MM-DD.",
+        )
+
     def test_reservation_creation_with_checkout_before_checkin(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
         reservation_data = {
             "checkin": "2023-07-12",
             "checkout": "2023-07-11",
-            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}]
+            "pet_rooms": [
+                {"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}
+            ],
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
@@ -250,14 +267,18 @@ class ReservationCreateView(APITestCase):
         expected_status_code = status.HTTP_400_BAD_REQUEST
         self.assertEqual(response.status_code, expected_status_code)
         self.assertIn("checkin", response_data)
-        self.assertEqual(response_data['checkin'][0], "Checkout date must be after checkin")
+        self.assertEqual(
+            response_data["checkin"][0], "Checkout date must be after checkin"
+        )
 
     def test_reservation_creation_with_checkout_same_as_checkin(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
         reservation_data = {
             "checkin": "2023-07-12",
             "checkout": "2023-07-12",
-            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}]
+            "pet_rooms": [
+                {"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}
+            ],
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
@@ -265,17 +286,19 @@ class ReservationCreateView(APITestCase):
         expected_status_code = status.HTTP_400_BAD_REQUEST
         self.assertEqual(response.status_code, expected_status_code)
         self.assertIn("checkin", response_data)
-        self.assertEqual(response_data['checkin'][0], "Checkout date must be after checkin")
-
-
+        self.assertEqual(
+            response_data["checkin"][0], "Checkout date must be after checkin"
+        )
 
     def test_reservation_creation_with_invalid_service_id(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")
         reservation_data = {
             "checkin": "2023-07-12",
             "checkout": "2023-07-15",
-            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}],
-            "services": [{"service_id": "id inválida", "amount": 2}]
+            "pet_rooms": [
+                {"pet_id": self.user_1_cat.id, "room_type_id": str(cat_room.id)}
+            ],
+            "services": [{"service_id": "id inválida", "amount": 2}],
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
@@ -286,7 +309,9 @@ class ReservationCreateView(APITestCase):
         reservation_data = {
             "checkin": "2023-07-12",
             "checkout": "2023-07-15",
-            "pet_rooms": [{"pet_id": self.user_1_cat.id, "room_type_id": 'id inválida'}],
+            "pet_rooms": [
+                {"pet_id": self.user_1_cat.id, "room_type_id": "id inválida"}
+            ],
         }
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")

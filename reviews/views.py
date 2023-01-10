@@ -1,7 +1,7 @@
 from .models import Reviews
 from .serializers import ReviewSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework import generics
 from users.permissions import IsAdm
 from .permissions import IsAccountOwnerReview
@@ -13,7 +13,7 @@ from reservations.models import Reservation
 
 class ReviewView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
@@ -27,7 +27,7 @@ class ReviewView(generics.ListCreateAPIView):
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAdm, IsAccountOwnerReview]
+    permission_classes = [IsAdm | IsAccountOwnerReview]
 
     serializer_class = ReviewSerializer
     queryset = Reviews.objects.all()
