@@ -116,13 +116,15 @@ class ReservationsView(ListCreateAPIView):
                             request.data["checkout"], "%Y-%m-%d"
                         ).date()
 
-                        if str(
-                            reservation_pet.pet.id
-                        ) == pet_id and are_dates_conflicting(
-                            checkin,
-                            checkout,
-                            reservation.checkin,
-                            reservation.checkout,
+                        if (
+                            str(reservation_pet.pet.id) == pet_id
+                            and are_dates_conflicting(
+                                checkin,
+                                checkout,
+                                reservation.checkin,
+                                reservation.checkout,
+                            )
+                            and reservation.status != "cancelled"
                         ):
                             return Response(
                                 {"detail": "Pet is already booked"},
