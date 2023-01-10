@@ -15,4 +15,4 @@ class IsAccountOwner(permissions.BasePermission):
 
 class IsAdm(permissions.BasePermission):
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_adm)
+        return bool(request.user and hasattr(request.user, 'is_adm') and request.user.is_adm)
