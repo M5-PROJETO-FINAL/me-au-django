@@ -6,10 +6,8 @@ from rest_framework import generics
 from users.permissions import IsAdm
 from .permissions import IsAccountOwnerReview
 from django.shortcuts import get_object_or_404
-
-
+import ipdb
 from reservations.models import Reservation
-
 
 class ReviewView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -19,8 +17,9 @@ class ReviewView(generics.ListCreateAPIView):
     queryset = Reviews.objects.all()
 
     def perform_create(self, serializer):
+        # ipdb.set_trace()
         reservation = get_object_or_404(
-            Reservation, pk=self.request.data["reservation_id"]
+            Reservation, pk=self.request.data["reservation"]
         )
         serializer.save(user=self.request.user, reservation=reservation)
 
