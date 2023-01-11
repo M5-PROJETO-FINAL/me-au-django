@@ -3,7 +3,6 @@ from rest_framework.views import status
 from users.models import User
 from tests.factories import create_user_with_token
 from django.contrib.auth import get_user_model
-import ipdb
 
 User: User = get_user_model()
 
@@ -53,7 +52,7 @@ class UserListViewsTest(APITestCase):
         expected_status_code = status.HTTP_200_OK
         resulted_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do GET com token correto "
+            "Verifique se o status code retornado do GET com token sem permissão de adm "
             + f"em `{self.BASE_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
@@ -70,7 +69,7 @@ class UserListViewsTest(APITestCase):
 
         resulted_data = response.json()
         msg = (
-            "Verifique se os dados retornados do GET com token correto em "
+            "Verifique se os dados retornados do GET com token sem permissão de adm "
             + f"em `{self.BASE_URL}` é {expected_data}"
         )
         self.assertEqual(expected_data, resulted_data, msg)
@@ -94,7 +93,7 @@ class UserListViewsTest(APITestCase):
         expected_status_code = status.HTTP_200_OK
         resulted_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do GET com token correto "
+            "Verifique se o status code retornado do GET com permissão de adm "
             + f"em `{self.BASE_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
@@ -113,7 +112,7 @@ class UserListViewsTest(APITestCase):
 
         resulted_data = response.json()
         msg = (
-            "Verifique se os dados retornados do GET com token correto em "
+            "Verifique se os dados retornados do GET com permissão de adm "
             + f"em `{self.BASE_URL}` é {expected_data}"
         )
         self.assertEqual(expected_data, resulted_data, msg)

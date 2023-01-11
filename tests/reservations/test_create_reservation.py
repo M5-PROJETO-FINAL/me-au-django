@@ -1,16 +1,15 @@
 from rest_framework.test import APITestCase
 from rest_framework.views import status
+from datetime import datetime, timedelta
 from rooms.models import RoomType
 from services.models import Service
 from users.models import User
 from tests.factories import create_user_with_token, create_normal_user_with_token
-from datetime import datetime, timedelta
 from tests.factories.reservation_factories import (
     create_dog,
     create_cat,
     create_dog_reservation,
 )
-import ipdb
 
 
 class ReservationCreateView(APITestCase):
@@ -65,7 +64,7 @@ class ReservationCreateView(APITestCase):
             expected_status_code = status.HTTP_401_UNAUTHORIZED
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST sem token"
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -99,7 +98,7 @@ class ReservationCreateView(APITestCase):
             expected_status_code = status.HTTP_201_CREATED
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST com token"
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -124,7 +123,7 @@ class ReservationCreateView(APITestCase):
             expected_status_code = status.HTTP_400_BAD_REQUEST
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST com quarto incompatível"
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -149,7 +148,7 @@ class ReservationCreateView(APITestCase):
             expected_status_code = status.HTTP_400_BAD_REQUEST
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST com quarto incompatível"
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -174,7 +173,7 @@ class ReservationCreateView(APITestCase):
             expected_status_code = status.HTTP_400_BAD_REQUEST
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST com quarto incompatível"
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -207,7 +206,7 @@ class ReservationCreateView(APITestCase):
             expected_status_code = status.HTTP_400_BAD_REQUEST
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST para datas conflitantes"
                 + f"em `{self.BASE_URL}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -226,7 +225,11 @@ class ReservationCreateView(APITestCase):
         response = self.client.post(self.BASE_URL, data=reservation_data, format="json")
         response_data = response.json()
         expected_status_code = status.HTTP_201_CREATED
-        self.assertEqual(response.status_code, expected_status_code)
+        msg = (
+            "Verifique se o status code retornado do POST para criação de reserva no dia atual"
+            + f"em `{self.BASE_URL}` é {expected_status_code}"
+        )
+        self.assertEqual(response.status_code, expected_status_code, msg)
 
     def test_reservation_creation_for_inexistent_date(self):
         cat_room = self.room_types.get(title="Quarto Privativo (gatos)")

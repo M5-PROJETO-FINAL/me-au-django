@@ -1,12 +1,9 @@
 from rest_framework.test import APITestCase
 from rest_framework.views import status
-from rooms.models import RoomType
-from reservations.models import Reservation
 from tests.factories import create_user_with_token, create_normal_user_with_token
 from tests.factories.reservation_factories import (
     create_dog_reservation,
 )
-import ipdb
 
 
 class ReservationDeleteView(APITestCase):
@@ -89,7 +86,7 @@ class ReservationDeleteView(APITestCase):
         expected_status_code = status.HTTP_403_FORBIDDEN
         resulted_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do DELETE de outro usuário "
+            "Verifique se o status code retornado do DELETE sem token correto"
             + f"em `{self.reservation_1_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
@@ -98,7 +95,7 @@ class ReservationDeleteView(APITestCase):
         expected_data = {"detail": "You do not have permission to perform this action."}
         resulted_data = response.json()
         msg = (
-            "Verifique se os dados retornados do DELETE de outro usuário "
+            "Verifique se os dados retornados do DELETE sem token correto "
             + f"em `{self.reservation_1_URL}` é {expected_data}"
         )
         self.assertDictEqual(expected_data, resulted_data, msg)

@@ -8,7 +8,6 @@ from tests.factories import (
     create_roomTypeDog_with_user,
     create_roomTypeShared_with_user,
 )
-import ipdb
 
 
 class RoomCreateView(APITestCase):
@@ -32,14 +31,14 @@ class RoomCreateView(APITestCase):
         cls.BASE_URL_shared = f"/api/rooms/{cls.roomShared.id}/types/"
         cls.BASE_URL_incorrect = f"/api/rooms/99999999/types/"
 
-    def test_roomtype_creation_not_authenticadet(self):
+    def test_roomtype_creation_not_authenticated(self):
         # STATUS CODE
         with self.subTest():
             response = self.client.post(self.BASE_URL_shared, data={}, format="json")
             expected_status_code = status.HTTP_401_UNAUTHORIZED
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST sem token "
                 + f"em `{self.BASE_URL_shared}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -48,7 +47,7 @@ class RoomCreateView(APITestCase):
         expected_data = {"detail": "Authentication credentials were not provided."}
         resulted_data = response.json()
         msg = (
-            "Verifique se a mensagem de retorno do POST sem token"
+            "Verifique se a mensagem de retorno do POST sem token "
             + f"em `{self.BASE_URL_shared}` está correta."
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
@@ -62,7 +61,7 @@ class RoomCreateView(APITestCase):
             expected_status_code = status.HTTP_201_CREATED
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST do quarto compartilhado "
                 + f"em `{self.BASE_URL_shared}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -76,7 +75,7 @@ class RoomCreateView(APITestCase):
         }
 
         msg = (
-            "Verifique se as informações retornadas no POST "
+            "Verifique se as informações retornadas no POST do quarto compartilhado "
             + f"em `{self.BASE_URL_shared}` estão corretas."
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
@@ -90,7 +89,7 @@ class RoomCreateView(APITestCase):
             expected_status_code = status.HTTP_201_CREATED
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST do quarto privativo para cães "
                 + f"em `{self.BASE_URL_dog}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -104,7 +103,7 @@ class RoomCreateView(APITestCase):
         }
 
         msg = (
-            "Verifique se as informações retornadas no POST "
+            "Verifique se as informações retornadas no POST do quarto privativo para cães "
             + f"em `{self.BASE_URL_dog}` estão corretas."
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
@@ -118,7 +117,7 @@ class RoomCreateView(APITestCase):
             expected_status_code = status.HTTP_201_CREATED
             result_status_code = response.status_code
             msg = (
-                "Verifique se o status code retornado do POST "
+                "Verifique se o status code retornado do POST do quarto privativo para gatos "
                 + f"em `{self.BASE_URL_cat}` é {expected_status_code}"
             )
             self.assertEqual(expected_status_code, result_status_code, msg)
@@ -132,7 +131,7 @@ class RoomCreateView(APITestCase):
         }
 
         msg = (
-            "Verifique se as informações retornadas no POST "
+            "Verifique se as informações retornadas no POST do quarto privativo para gatos "
             + f"em `{self.BASE_URL_cat}` estão corretas."
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
@@ -145,7 +144,7 @@ class RoomCreateView(APITestCase):
         expected_status_code = status.HTTP_403_FORBIDDEN
         result_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do POST "
+            "Verifique se o status code retornado do POST com token sem permissão de adm "
             + f"em `{self.BASE_URL_cat}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, result_status_code, msg)
@@ -155,7 +154,10 @@ class RoomCreateView(APITestCase):
         }
 
         resulted_message = response.json()
-        msg = f"Verifique se a mensagem retornada do POST em {self.BASE_URL_cat} está correta"
+        msg = (
+            "Verifique se a mensagem retornada do POST com token sem permissão de adm "
+            + f"em {self.BASE_URL_cat} está correta"
+        )
         self.assertDictEqual(expected_message, resulted_message, msg)
 
     def test_roomtype_creation_with_invalid_id(self):
