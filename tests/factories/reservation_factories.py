@@ -74,7 +74,6 @@ def create_dog_reservation(
 
     return serializer.save(user=user)
 
-<<<<<<< HEAD
 def create_multiple_reservations(
     user: User, pets: QuerySet
 ) -> QuerySet[Reservation]:
@@ -118,29 +117,45 @@ def create_multiple_shared_reservations(
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
 
+
 def create_two_pets_same_reservation(
     user: User, pets: QuerySet
 ) -> QuerySet[Reservation]:
 
-    roomType = RoomType.objects.get(title="Quarto Compartilhado")
+    roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
 
     reservations_data = [
         {
-            "checkin": "2023-02-22",
-            "checkout": "2023-02-24",
+            "checkin": "2023-03-22",
+            "checkout": "2023-03-24",
             "pet_rooms": [
-                {"pet_id": str(pet.id), "room_type_id": roomType.id},
-                {"pet_id": str(pet.id), "room_type_id": roomType.id}
+                {"pet_id": str(pets[0].id), "room_type_id": roomType.id},
+                {"pet_id": str(pets[1].id), "room_type_id": roomType.id}
+                ],
+        },
+        {
+            "checkin": "2023-03-22",
+            "checkout": "2023-03-24",
+            "pet_rooms": [
+                {"pet_id": str(pets[2].id), "room_type_id": roomType.id},
+                {"pet_id": str(pets[3].id), "room_type_id": roomType.id}
+                ],
+        },
+        {
+            "checkin": "2023-03-22",
+            "checkout": "2023-03-24",
+            "pet_rooms": [
+                {"pet_id": str(pets[4].id), "room_type_id": roomType.id},
+                {"pet_id": str(pets[5].id), "room_type_id": roomType.id}
                 ],
         }
-        for pet in pets
     ]
 
     for book in reservations_data:
         serializer = ReservationSerializer(data=book)
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
-=======
+
 
 def create_concluded_reservation(
     user: User = None, reservation_data: dict = None
@@ -162,4 +177,3 @@ def create_concluded_reservation(
     resultado = serializer.save(user=user)
 
     return resultado
->>>>>>> 019a38e1a33ddeeaa31c5e1e1eb2c9b6b250938c
