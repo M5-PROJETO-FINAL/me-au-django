@@ -116,19 +116,47 @@ class ReservationsView(ListCreateAPIView):
                             request.data["checkout"], "%Y-%m-%d"
                         ).date()
 
-                        if str(
-                            reservation_pet.pet.id
-                        ) == pet_id and are_dates_conflicting(
-                            checkin,
-                            checkout,
-                            reservation.checkin,
-                            reservation.checkout,
+                        if (
+                            str(reservation_pet.pet.id) == pet_id
+                            and are_dates_conflicting(
+                                checkin,
+                                checkout,
+                                reservation.checkin,
+                                reservation.checkout,
+                            )
+                            and reservation.status != "cancelled"
                         ):
                             return Response(
                                 {"detail": "Pet is already booked"},
                                 status.HTTP_400_BAD_REQUEST,
                             )
         return self.create(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serialized_reservations = []
+        for reservation in queryset.all():
+            serializer = ReservationSerializer(reservation)
+
+            pet_rooms_list = []
+            for res_pet in reservation.reservation_pets.all():
+                pet_room = {
+                    "pet": res_pet.pet.name,
+                    "rooms_type_id": res_pet.room.room_type_id,
+                }
+                pet_rooms_list.append(pet_room)
+
+            services_list = []
+            for serv in reservation.reservation_services.all():
+                service = {"service": serv.service.name, "amount": serv.amount}
+                services_list.append(service)
+            reservation_dict = {
+                **serializer.data,
+                "pets_rooms": pet_rooms_list,
+                "services": services_list,
+            }
+            serialized_reservations.append(reservation_dict)
+        return Response(serialized_reservations)
 
     def get_queryset(self):
         if self.request.user.is_adm:
