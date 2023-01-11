@@ -67,6 +67,8 @@ class ReservationListView(APITestCase):
                 "updated_at": self.reservation_dog.updated_at.strftime(
                     "%Y-%m-%dT%H:%M:%S.%fZ"
                 ),
+                "pets_rooms": [{"pet": "dog", "rooms_type_id": 2}],
+                "services": [],
             }
         ]
         resulted_data = response.json()

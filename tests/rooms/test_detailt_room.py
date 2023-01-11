@@ -105,14 +105,14 @@ class RoomDetailView(APITestCase):
         resulted_status_code = response.status_code
         msg = (
             "Verifique se o status code retornado do DELETE com ID incorreto "
-            + f"em `{self.BASE_URL}` é {expected_status_code}"
+            + f"em `{self.BASE_URL_INCORRECT_ID}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
     def test_delete_room_with_non_admin_user(self):
 
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
-        response = self.client.delete(self.BASE_URL_INCORRECT_ID, format="json")
+        response = self.client.delete(self.BASE_URL, format="json")
 
         # STATUS CODE
         expected_status_code = status.HTTP_403_FORBIDDEN

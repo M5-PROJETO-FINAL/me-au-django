@@ -11,6 +11,7 @@ from .roomtype_factories import (
     create_roomTypeShared_with_user,
 )
 import ipdb
+from django.db.models import QuerySet
 
 
 def create_dog(user: User = None, dog_data: dict = None) -> Pet:
@@ -72,6 +73,88 @@ def create_dog_reservation(
     serializer.is_valid(raise_exception=True)
 
     return serializer.save(user=user)
+
+def create_multiple_reservations(
+    user: User, pets: QuerySet
+) -> QuerySet[Reservation]:
+
+    roomType = RoomType.objects.get(title="Quarto Privativo (gatos)")
+
+    reservations_data = [
+        {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(pet.id), "room_type_id": roomType.id}],
+        }
+        for pet in pets
+    ]
+
+    for book in reservations_data:
+        serializer = ReservationSerializer(data=book)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
+    #reservations_objects = [Reservation(**reserv_data) for reserv_data in reservations_data]
+    #reservation = Reservation.objects.bulk_create(reservations_objects)
+
+
+def create_multiple_shared_reservations(
+    user: User, pets: QuerySet
+) -> QuerySet[Reservation]:
+
+    roomType = RoomType.objects.get(title="Quarto Compartilhado")
+
+    reservations_data = [
+        {
+            "checkin": "2023-02-22",
+            "checkout": "2023-02-24",
+            "pet_rooms": [{"pet_id": str(pet.id), "room_type_id": roomType.id}],
+        }
+        for pet in pets
+    ]
+
+    for book in reservations_data:
+        serializer = ReservationSerializer(data=book)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
+
+
+def create_two_pets_same_reservation(
+    user: User, pets: QuerySet
+) -> QuerySet[Reservation]:
+
+    roomType = RoomType.objects.get(title="Quarto Privativo (cães)")
+
+    reservations_data = [
+        {
+            "checkin": "2023-03-22",
+            "checkout": "2023-03-24",
+            "pet_rooms": [
+                {"pet_id": str(pets[0].id), "room_type_id": roomType.id},
+                {"pet_id": str(pets[1].id), "room_type_id": roomType.id}
+                ],
+        },
+        {
+            "checkin": "2023-03-22",
+            "checkout": "2023-03-24",
+            "pet_rooms": [
+                {"pet_id": str(pets[2].id), "room_type_id": roomType.id},
+                {"pet_id": str(pets[3].id), "room_type_id": roomType.id}
+                ],
+        },
+        {
+            "checkin": "2023-03-22",
+            "checkout": "2023-03-24",
+            "pet_rooms": [
+                {"pet_id": str(pets[4].id), "room_type_id": roomType.id},
+                {"pet_id": str(pets[5].id), "room_type_id": roomType.id}
+                ],
+        }
+    ]
+
+    for book in reservations_data:
+        serializer = ReservationSerializer(data=book)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=user)
 
 
 def create_concluded_reservation(

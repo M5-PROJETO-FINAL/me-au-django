@@ -17,7 +17,7 @@ class ReviewSerializer(serializers.Serializer):
             return review
         else:
             raise serializers.ValidationError(
-                "Unable to review before booking is completed", code=400
+                detail="Unable to review before booking is completed", code=400
             )
 
     def update(self, instance: Reviews, validated_data: dict):
