@@ -24,12 +24,12 @@ def create_pet_with_user(
 
 
 def create_multiple_pet_with_user(
-    user: User, pets_count: int
+    user: User, pets_count: int, type: str
 ) -> QuerySet[Pet]:
     pets_data = [
         {
-            "name": f"Algum {index}",
-            "type": "cat",
+            "name": f"Pet {index}",
+            "type": f"{type}",
             "age": "2 years old",
             "neutered": True,
             "vaccinated": True,
@@ -37,7 +37,7 @@ def create_multiple_pet_with_user(
         }
         for index in range(1, pets_count + 1)
     ]
-    pets_objects = [Pet(**pets_data) for pet_data in pets_data]
+    pets_objects = [Pet(**pet_data, user=user) for pet_data in pets_data]
     pets = Pet.objects.bulk_create(pets_objects)
 
     return pets

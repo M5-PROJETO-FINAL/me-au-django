@@ -72,7 +72,8 @@ class RoomTypeDetailView(RetrieveUpdateDestroyAPIView):
 
 class RoomDateTypeView(ListAPIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminUser]
+
     queryset = Room.objects.all()
     lookup_url_kwarg = "pk"
 
