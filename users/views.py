@@ -7,10 +7,11 @@ from rest_framework.decorators import action, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import User
 from .serializers import UserSerializer
-from .permissions import IsAccountOwner, IsAdm
+from .permissions import IsAccountOwner, IsAdm, IsAuthenticatedOrPost
 import random
 from django.core.mail import send_mail
 from django.conf import settings
+import ipdb
 
 
 class UserView(ListCreateAPIView):
@@ -18,7 +19,7 @@ class UserView(ListCreateAPIView):
     serializer_class = UserSerializer
 
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrPost]
 
     def get_queryset(self):
         if self.request.user.is_adm:
@@ -26,10 +27,10 @@ class UserView(ListCreateAPIView):
 
         return self.queryset.filter(email=self.request.user.email)
 
-    def get_permissions(self):
-        if self.request.method == "POST":
-            self.permission_classes = [AllowAny]
-        return [permission() for permission in self.permission_classes]
+    # def get_permissions(self):
+    #     if self.request.method == "POST":
+    #         self.permission_classes = [AllowAny]
+    #     return [permission() for permission in self.permission_classes]
 
     # sobrescrevendo esse método para que, quando o request seja feito por um usuário não adm,
     # seja retornado apenas o objeto (não um array) // 3 últimas linhas da função

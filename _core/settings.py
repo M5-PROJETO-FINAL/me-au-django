@@ -30,6 +30,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = False
 
 ALLOWED_HOSTS = ["ec2-34-205-127-26.compute-1.amazonaws.com"]
+# ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -43,10 +44,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "drf_spectacular",
-]
+THIRD_PARTY_APPS = ["rest_framework", "drf_spectacular", "corsheaders"]
 
 MY_APPS = ["users", "pets", "reservations", "reviews", "rooms", "services"]
 
@@ -55,6 +53,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -172,3 +171,11 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = "meaupethotel@gmail.com"
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = "587"
+
+
+# CORS
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+# CORS_ORIGIN_ALLOW_ALL = False
+# CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]

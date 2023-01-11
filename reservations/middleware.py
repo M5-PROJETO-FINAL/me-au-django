@@ -1,5 +1,6 @@
 from datetime import datetime
 from .models import Reservation
+import ipdb
 
 
 class UpdateReservationStatusMiddleware:
@@ -30,5 +31,15 @@ class UpdateReservationStatusMiddleware:
                 reservation.status = "active"
                 reservation.save()
             elif reservation.status == "active" and today.date() >= checkout:
+                reservation.status = "concluded"
+                reservation.save()
+            elif (
+                reservation.status == "active"
+                and today.date() > checkin
+                and today.date() > checkout
+                or reservation.status == "reserved"
+                and today.date() > checkin
+                and today.date() > checkout
+            ):
                 reservation.status = "concluded"
                 reservation.save()

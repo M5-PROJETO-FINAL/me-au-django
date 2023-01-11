@@ -6,11 +6,13 @@ from rest_framework.views import APIView, Response, status
 from django.shortcuts import get_object_or_404
 from .models import Reservation
 from .serializers import ReservationSerializer
+from .permissions import IsAccountOwner, IsAdm
 from pets.models import Pet
 from rooms.models import RoomType
 from rooms.aux_functions.dates import are_dates_conflicting
 from rooms.aux_functions.availability import RoomUnavailable
 import uuid
+import ipdb
 
 
 class ReservationsView(ListCreateAPIView):
@@ -47,21 +49,36 @@ class ReservationsView(ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         if "services" in request.data:
-            for service in request.data['services']:
-                if type(service['service_id']) != int and not service['service_id'].isnumeric():
-                    return Response({"message": "Invalid service id"}, status=status.HTTP_400_BAD_REQUEST)
+            for service in request.data["services"]:
+                if (
+                    type(service["service_id"]) != int
+                    and not service["service_id"].isnumeric()
+                ):
+                    return Response(
+                        {"message": "Invalid service id"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
 
         if "pet_rooms" in request.data:
             # validate id's:
             for pet_room in request.data["pet_rooms"]:
-                pet_id = pet_room['pet_id']
+                pet_id = pet_room["pet_id"]
                 try:
                     uuid.UUID(pet_id)
                 except ValueError:
-                    return Response({"message": "Invalid pet id"}, status=status.HTTP_400_BAD_REQUEST)
-                room_type_id = pet_room['room_type_id']
-                if type(room_type_id) != int and not pet_room['room_type_id'].isnumeric():
-                    return Response({"message": "Invalid room type id"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        {"message": "Invalid pet id"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+                room_type_id = pet_room["room_type_id"]
+                if (
+                    type(room_type_id) != int
+                    and not pet_room["room_type_id"].isnumeric()
+                ):
+                    return Response(
+                        {"message": "Invalid room type id"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
 
             for data in request.data["pet_rooms"]:
                 pet_obj = get_object_or_404(Pet.objects.all(), id=data["pet_id"])
@@ -86,7 +103,6 @@ class ReservationsView(ListCreateAPIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-
             for data in request.data["pet_rooms"]:
                 pet_id = data["pet_id"]
                 reservations = Reservation.objects.all()
@@ -100,30 +116,70 @@ class ReservationsView(ListCreateAPIView):
                             request.data["checkout"], "%Y-%m-%d"
                         ).date()
 
-                        if str(
-                            reservation_pet.pet.id
-                        ) == pet_id and are_dates_conflicting(
-                            checkin,
-                            checkout,
-                            reservation.checkin,
-                            reservation.checkout,
+                        if (
+                            str(reservation_pet.pet.id) == pet_id
+                            and are_dates_conflicting(
+                                checkin,
+                                checkout,
+                                reservation.checkin,
+                                reservation.checkout,
+                            )
+                            and reservation.status != "cancelled"
                         ):
                             return Response(
                                 {"detail": "Pet is already booked"},
                                 status.HTTP_400_BAD_REQUEST,
                             )
-
-
         return self.create(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serialized_reservations = []
+        for reservation in queryset.all():
+            serializer = ReservationSerializer(reservation)
+
+            pet_rooms_list = []
+            for res_pet in reservation.reservation_pets.all():
+                pet_room = {
+                    "pet": res_pet.pet.name,
+                    "rooms_type_id": res_pet.room.room_type_id,
+                }
+                pet_rooms_list.append(pet_room)
+
+            services_list = []
+            for serv in reservation.reservation_services.all():
+                service = {"service": serv.service.name, "amount": serv.amount}
+                services_list.append(service)
+            reservation_dict = {
+                **serializer.data,
+                "pets_rooms": pet_rooms_list,
+                "services": services_list,
+            }
+            serialized_reservations.append(reservation_dict)
+        return Response(serialized_reservations)
 
     def get_queryset(self):
         if self.request.user.is_adm:
             return self.queryset.all()
         return self.queryset.filter(user=self.request.user)
 
+
 class ReservationDeleteView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdm | IsAccountOwner]
+
     def delete(self, request, reservation_id):
         reservation = get_object_or_404(Reservation, id=reservation_id)
+
+        if reservation.status == "cancelled":
+            return Response(
+                {"detail": "You cannot delete a cancelled reservation."},
+                status.HTTP_400_BAD_REQUEST,
+            )
+
         reservation.status = "cancelled"
         reservation.save()
+
+        self.check_object_permissions(request, reservation)
+
         return Response({}, status=status.HTTP_204_NO_CONTENT)
