@@ -11,7 +11,7 @@ import ipdb
 class ReservationListView(APITestCase):
     @classmethod
     def setUpTestData(cls) -> None:
-        
+
         cls.user_1_super, token_1 = create_user_with_token()
         cls.access_token_1 = str(token_1.access_token)
 
@@ -23,7 +23,6 @@ class ReservationListView(APITestCase):
         cls.reservation_dog2 = create_dog_reservation(user=cls.user_1_super)
 
         cls.BASE_URL = "/api/reservations/"
-
 
     def test_list_reservations_without_token(self):
         response = self.client.get(self.BASE_URL, format="json")
@@ -46,7 +45,6 @@ class ReservationListView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-
     def test_list_reservations_with_token(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
         response = self.client.get(self.BASE_URL, format="json")
@@ -61,22 +59,29 @@ class ReservationListView(APITestCase):
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
         # RETORNO JSON
-        expected_data = [{
-		"id": str(self.reservation_dog.id),
-		"status": str(self.reservation_dog.status),
-		"checkin": str(self.reservation_dog.checkin),
-		"checkout": str(self.reservation_dog.checkout),
-		"created_at": self.reservation_dog.created_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-		"updated_at": self.reservation_dog.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-	    }]
+        expected_data = [
+            {
+                "id": str(self.reservation_dog.id),
+                "status": str(self.reservation_dog.status),
+                "checkin": str(self.reservation_dog.checkin),
+                "checkout": str(self.reservation_dog.checkout),
+                "created_at": self.reservation_dog.created_at.strftime(
+                    "%Y-%m-%dT%H:%M:%S.%fZ"
+                ),
+                "updated_at": self.reservation_dog.updated_at.strftime(
+                    "%Y-%m-%dT%H:%M:%S.%fZ"
+                ),
+                "pets_rooms": [{"pet": "dog", "rooms_type_id": 2}],
+                "services": [],
+            }
+        ]
         resulted_data = response.json()
-        
+
         msg = (
             "Verifique se os dados retornados do GET com token "
             + f"em `{self.BASE_URL}` é {expected_data}"
         )
         self.assertDictEqual(expected_data[0], resulted_data[0], msg)
-
 
     def test_list_reservations_with_admin_token(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
@@ -92,11 +97,11 @@ class ReservationListView(APITestCase):
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
         # RETORNO JSON
-        
+
         resulted_data = response.json()
         results_len = len(resulted_data)
         expected_len = 2
-        
+
         msg = (
             "Verifique se os dados retornados do GET com token de admin "
             + f"em `{self.BASE_URL}` é {results_len}"
