@@ -1,11 +1,7 @@
 from rest_framework.test import APITestCase
-from pets.models import Pet
-from users.models import User
-from tests.factories import create_user_with_token, create_normal_user_with_token
-
-# from django.test import TestCase
 from rest_framework.views import status
-import ipdb
+from pets.models import Pet
+from tests.factories import create_user_with_token, create_normal_user_with_token
 
 
 class PetViewCreateTest(APITestCase):
@@ -25,7 +21,7 @@ class PetViewCreateTest(APITestCase):
             "age": "2 years old",
             "neutered": True,
             "vaccinated": True,
-            "docile": True
+            "docile": True,
         }
 
         cls.pet_data_2 = {
@@ -36,7 +32,6 @@ class PetViewCreateTest(APITestCase):
             "vaccinated": True,
         }
 
-
     def test_pet_creation_without_token(self):
 
         response = self.client.post(self.BASE_URL, data=self.pet_data, format="json")
@@ -45,7 +40,7 @@ class PetViewCreateTest(APITestCase):
         expected_status_code = status.HTTP_401_UNAUTHORIZED
         resulted_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do POST sem todos os campos obrigatórios "
+            "Verifique se o status code retornado do POST sem token "
             + f"em `{self.BASE_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
@@ -59,16 +54,17 @@ class PetViewCreateTest(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-
     def test_pet_creation_with_wrong_token(self):
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
+        self.client.credentials(
+            HTTP_AUTHORIZATION="Bearer " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        )
         response = self.client.post(self.BASE_URL, data=self.pet_data, format="json")
 
         # STATUS CODE
         expected_status_code = status.HTTP_401_UNAUTHORIZED
         resulted_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do POST sem todos os campos obrigatórios "
+            "Verifique se o status code retornado do POST com token invalido "
             + f"em `{self.BASE_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
@@ -76,14 +72,13 @@ class PetViewCreateTest(APITestCase):
         # RETORNO JSON
         expected_data = "Given token not valid for any token type"
         resulted_data = response.json()
-        resulted_data_message = str(resulted_data['detail'])
+        resulted_data_message = str(resulted_data["detail"])
 
         msg = (
             "Verifique se os dados retornados do POST com token invalido "
             + f"em `{self.BASE_URL}` é {expected_data}"
         )
         self.assertEqual(expected_data, resulted_data_message, msg)
-
 
     def test_pet_creation(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
@@ -108,14 +103,14 @@ class PetViewCreateTest(APITestCase):
             "neutered": pet_db.neutered,
             "vaccinated": pet_db.vaccinated,
             "docile": pet_db.docile,
-            "user":{
+            "user": {
                 "id": str(pet_db.user.id),
-		        "name": pet_db.user.name,
+                "name": pet_db.user.name,
                 "email": pet_db.user.email,
                 "is_adm": pet_db.user.is_adm,
-		        "profile_img": pet_db.user.profile_img,
-		        "cpf": pet_db.user.cpf
-            }
+                "profile_img": pet_db.user.profile_img,
+                "cpf": pet_db.user.cpf,
+            },
         }
 
         resulted_data = response.json()
@@ -125,7 +120,6 @@ class PetViewCreateTest(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-
     def test_pet_creation_with_missing_field(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_1)
         response = self.client.post(self.BASE_URL, data=self.pet_data_2, format="json")
@@ -134,21 +128,17 @@ class PetViewCreateTest(APITestCase):
         expected_status_code = status.HTTP_400_BAD_REQUEST
         result_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do POST "
+            "Verifique se o status code retornado do POST sem todos os campos obrigatórios "
             + f"em `{self.BASE_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, result_status_code, msg)
 
         # RETORNO JSON
-        expected_data = {
-	        "docile": [
-		        "This field is required."
-	        ]
-        }
+        expected_data = {"docile": ["This field is required."]}
 
         resulted_data = response.json()
         msg = (
-            "Verifique se as informações do pet retornada no POST "
+            "Verifique se as informações do pet retornada no POST sem todos os campos obrigatórios "
             + f"em `{self.BASE_URL}` estão corretas."
         )
         self.assertDictEqual(expected_data, resulted_data, msg)

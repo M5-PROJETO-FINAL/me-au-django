@@ -3,8 +3,6 @@ from rest_framework.views import status
 from rooms.models import Room
 from tests.factories import create_user_with_token, create_normal_user_with_token
 
-import ipdb
-
 
 class RoomListView(APITestCase):
     @classmethod
@@ -40,7 +38,7 @@ class RoomListView(APITestCase):
         )
         self.assertDictEqual(expected_data, resulted_data, msg)
 
-    def test_list_room_with_not_admin_user(self):
+    def test_list_room_with_non_admin_user(self):
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
         response = self.client.get(self.BASE_URL, format="json")
 

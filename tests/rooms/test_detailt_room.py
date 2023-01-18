@@ -1,13 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework.views import status
-from rooms.models import RoomType
 from tests.factories import create_user_with_token, create_normal_user_with_token
-from tests.factories import (
-    create_roomTypeCat_with_user,
-    create_roomTypeDog_with_user,
-    create_roomTypeShared_with_user,
-)
-import ipdb
 
 
 class RoomDetailView(APITestCase):
@@ -112,14 +105,14 @@ class RoomDetailView(APITestCase):
         resulted_status_code = response.status_code
         msg = (
             "Verifique se o status code retornado do DELETE com ID incorreto "
-            + f"em `{self.BASE_URL}` é {expected_status_code}"
+            + f"em `{self.BASE_URL_INCORRECT_ID}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
 
-    def test_delete_room_with_not_admin_user(self):
+    def test_delete_room_with_non_admin_user(self):
 
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + self.access_token_2)
-        response = self.client.delete(self.BASE_URL_INCORRECT_ID, format="json")
+        response = self.client.delete(self.BASE_URL, format="json")
 
         # STATUS CODE
         expected_status_code = status.HTTP_403_FORBIDDEN

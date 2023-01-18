@@ -1,9 +1,6 @@
 from rest_framework.test import APITestCase
-from users.models import User
-
-# from django.test import TestCase
 from rest_framework.views import status
-import ipdb
+from users.models import User
 
 
 class UserViewTest(APITestCase):

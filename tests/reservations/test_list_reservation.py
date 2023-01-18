@@ -1,11 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework.views import status
-from rooms.models import RoomType
-from reservations.models import Reservation
 from tests.factories import create_user_with_token, create_normal_user_with_token
 from tests.factories.reservation_factories import create_dog_reservation
-
-import ipdb
 
 
 class ReservationListView(APITestCase):

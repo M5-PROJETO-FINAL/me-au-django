@@ -1,9 +1,8 @@
 from rest_framework.test import APITestCase
 from rest_framework.views import status
+from django.contrib.auth import get_user_model
 from users.models import User
 from tests.factories import create_user_with_token
-from django.contrib.auth import get_user_model
-import ipdb
 
 User: User = get_user_model()
 
@@ -239,7 +238,7 @@ class UserDetailViewsTest(APITestCase):
         expected_status_code = status.HTTP_403_FORBIDDEN
         resulted_status_code = response.status_code
         msg = (
-            "Verifique se o status code retornado do PATCH alterando o isAdn "
+            "Verifique se o status code retornado do PATCH alterando o isAdm "
             + f"em `{self.BASE_URL}` é {expected_status_code}"
         )
         self.assertEqual(expected_status_code, resulted_status_code, msg)
@@ -248,7 +247,7 @@ class UserDetailViewsTest(APITestCase):
             "detail": "You do not have permission to perform this action."
         }
         resulted_message = response.json()
-        msg = f"Verifique se a mensagem retornada do PATCH alterando o isAdn em {self.BASE_URL} está correta"
+        msg = f"Verifique se a mensagem retornada do PATCH alterando o isAdm em {self.BASE_URL} está correta"
         self.assertDictEqual(expected_message, resulted_message, msg)
 
     def test_update_user_ID_Field(self):
